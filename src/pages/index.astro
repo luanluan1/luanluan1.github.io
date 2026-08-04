@@ -8,7 +8,7 @@ import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 
 const latestPosts = (await getCollection('blog'))
 	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
-	.slice(0, 2);
+	.slice(0, 3);
 
 const projects = [
 	{
@@ -38,10 +38,10 @@ const projects = [
 		<Header />
 		<main class="page-shell home-page">
 			<section class="hero" aria-labelledby="hero-title">
-				<p class="eyebrow">AI APPLICATION ENGINEER / GUANGZHOU</p>
-				<h1 id="hero-title">陈梓聪</h1>
+				<p class="eyebrow">AI APPLICATION DEVELOPER / GUANGZHOU</p>
+				<h1 id="hero-title">luanluan1</h1>
 				<p class="hero-lead">
-					我做 AI 应用交付与开发，正在把“功能能跑”推进到可评测、可观测、可恢复的工程系统。
+					我做 AI 应用开发，正在把“功能能跑”推进到可评测、可观测、可恢复的工程系统。
 				</p>
 				<div class="hero-actions">
 					<a class="button primary" href="/projects">查看项目</a>
