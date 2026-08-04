@@ -1,0 +1,24 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="页面不存在 | 陈梓聪" description="请求的页面不存在。" />
+	</head>
+	<body>
+		<Header />
+		<main class="page-shell inner-page">
+			<header class="page-intro">
+				<p class="eyebrow">404</p>
+				<h1>页面不存在</h1>
+				<p>这个链接可能已经变更，或者原始地址有误。</p>
+				<a class="button primary" href="/">返回首页</a>
+			</header>
+		</main>
+		<Footer />
+	</body>
+</html>

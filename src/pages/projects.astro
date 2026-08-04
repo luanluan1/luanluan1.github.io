@@ -1,0 +1,71 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Footer from '../components/Footer.astro';
+import Header from '../components/Header.astro';
+
+const projects = [
+	{
+		number: '01',
+		title: 'RAG 知识检索与问答系统',
+		context: '创投信息来源分散，知识库之间缺少统一的检索入口。',
+		work: '参与 RAG 架构、多知识库调度、HTTP API 接入、检索逻辑与缓存优化，并处理容量限制和时间字段规范。',
+		stack: ['Python', 'Dify', 'RAGFlow', '向量检索'],
+	},
+	{
+		number: '02',
+		title: '会议转写与智能总结系统',
+		context: '会议记录整理耗时，决策点和待办事项容易丢失。',
+		work: '完成语音转写、说话人处理、行业词典和 LLM 结构化总结流程，将输出统一为摘要、决策和待办。',
+		stack: ['Paraformer', 'CAM++', 'LLM', 'Python'],
+	},
+	{
+		number: '03',
+		title: '创投数据采集与治理工具',
+		context: '公开信息分散在多个来源，字段命名和公司实体不一致。',
+		work: '开发自动采集、定时调度、数据清洗和实体匹配流程，将非结构化文本整理为可检索的事件数据。',
+		stack: ['Playwright', 'Pandas', 'RPA', '定时任务'],
+	},
+	{
+		number: '04',
+		title: '多模态技术选型与名片识别',
+		context: '业务需要从图片、语音和文档中稳定提取结构化信息。',
+		work: '对视觉、ASR 和 OCR 候选方案进行测试与选型，并用 Qwen2.5-VL 完成名片字段提取与结构化存储。',
+		stack: ['Qwen2.5-VL', 'OCR', 'ASR', '模型评测'],
+	},
+];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+	<head>
+		<BaseHead title="项目 | 陈梓聪" description="AI 应用、RAG、多模态与数据工程项目。" />
+	</head>
+	<body>
+		<Header />
+		<main class="page-shell inner-page">
+			<header class="page-intro">
+				<p class="eyebrow">PROJECTS</p>
+				<h1>项目</h1>
+				<p>我在项目中主要负责把模型能力接入业务，并处理数据、工作流、部署与验收问题。</p>
+			</header>
+			<section class="project-detail-list" aria-label="项目列表">
+				{projects.map((project) => (
+					<article class="project-detail">
+						<p class="project-number">{project.number}</p>
+						<div>
+							<h2>{project.title}</h2>
+							<dl>
+								<div><dt>场景</dt><dd>{project.context}</dd></div>
+								<div><dt>工作</dt><dd>{project.work}</dd></div>
+							</dl>
+							<ul class="tag-list" aria-label="技术栈">
+								{project.stack.map((item) => <li>{item}</li>)}
+							</ul>
+						</div>
+					</article>
+				))}
+			</section>
+		</main>
+		<Footer />
+	</body>
+</html>

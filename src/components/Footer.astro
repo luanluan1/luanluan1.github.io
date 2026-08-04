@@ -1,0 +1,16 @@
+---
+import { GITHUB_URL } from '../consts';
+
+const today = new Date();
+---
+
+<footer class="site-footer">
+	<div class="footer-inner">
+		<p>&copy; {today.getFullYear()} 陈梓聪</p>
+		<nav aria-label="页脚导航">
+			<a href={GITHUB_URL} target="_blank" rel="noreferrer">GitHub</a>
+			<a href="/rss.xml">RSS</a>
+			<a href="mailto:3364389246@qq.com">邮箱</a>
+		</nav>
+	</div>
+</footer>
