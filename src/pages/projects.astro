@@ -6,31 +6,49 @@ import Header from '../components/Header.astro';
 const projects = [
 	{
 		number: '01',
-		title: 'RAG 知识检索与问答系统',
-		context: '创投信息来源分散，知识库之间缺少统一的检索入口。',
-		work: '参与 RAG 架构、多知识库调度、HTTP API 接入、检索逻辑与缓存优化，并处理容量限制和时间字段规范。',
-		stack: ['Python', 'Dify', 'RAGFlow', '向量检索'],
+		kind: '自主项目 / 组合项目',
+		title: '创投情报与多渠道发布工作台',
+		context: '把“创投”和“小红书 MCP”合并为一条作品线：从公开创投资讯进入系统，到结构化抽取、内容审核、图卡生成和发布执行。',
+		work: '使用 Playwright、MySQL 和 LLM 构建增量采集与抽取流程，生成固定尺寸图卡、文案和 manifest；再通过带 Token 校验、dry-run 和账号健康检查的 sidecar 接入小红书 MCP。发布流水线保留人工确认，并用 LangGraph 处理搜索重试、质量闸门和异常分支。',
+		boundary: '情报工作台与发布服务独立部署；实际发布默认需要人工确认。MCP 浏览器能力基于开源 xiaohongshu-mcp 扩展，并增加 CloakBrowser 适配和 Windows 私有部署包。',
+		stack: ['TypeScript', 'React', 'MySQL', 'Playwright', 'MCP', 'LangGraph'],
+		links: [
+			{ label: '查看 MCP 改造部分', href: 'https://github.com/luanluan1/xiaohongshu-mcp' },
+		],
 	},
 	{
 		number: '02',
-		title: '会议转写与智能总结系统',
-		context: '会议记录整理耗时，决策点和待办事项容易丢失。',
-		work: '完成语音转写、说话人处理、行业词典和 LLM 结构化总结流程，将输出统一为摘要、决策和待办。',
-		stack: ['Paraformer', 'CAM++', 'LLM', 'Python'],
+		kind: '自主开源项目',
+		title: 'Code Archaeology Skill',
+		context: '帮助接手旧模块的工程师回答“这段代码为什么变成今天这样”，把零散 Git 历史整理成可核验的演化报告。',
+		work: '实现本地 Git 证据采集器，支持文件、目录、glob、模块名和符号查询，整理 rename、revert、blame 存活度与提交评分；可选补充 Python AST 差异、GitHub/GitLab 协作记录，并将证据包渲染为离线 HTML 时间线。',
+		boundary: '采集器只负责排序和组织证据，最终结论仍要求 Agent 阅读关键 diff。默认不访问远端，也不根据提交数量推断所有权或作者动机。',
+		stack: ['Python', 'Git', 'AST', 'Codex Skill', 'HTML'],
+		links: [
+			{ label: '查看开源仓库', href: 'https://github.com/luanluan1/code-archaeology-skill' },
+		],
 	},
 	{
 		number: '03',
-		title: '创投数据采集与治理工具',
-		context: '公开信息分散在多个来源，字段命名和公司实体不一致。',
-		work: '开发自动采集、定时调度、数据清洗和实体匹配流程，将非结构化文本整理为可检索的事件数据。',
-		stack: ['Playwright', 'Pandas', 'RPA', '定时任务'],
+		kind: '开源二次开发',
+		title: 'TrendPublish 微信公众号系统',
+		context: '基于开源 TrendPublish 研究微信公众号的自动选题与文章生产链路，包括抓取、去重、证据补全、组稿、质量审查、排版和草稿发布。',
+		work: '围绕本地运行完成 Windows Dashboard 路径兼容、运行时配置 API 类型修正和公众号账号配置适配，并梳理 Deno、React Dashboard、Cloudflare 与本地存储之间的运行边界。',
+		boundary: '这是对现有开源系统的本地适配与二次开发，不表述为从零构建；目前与“热点线索台”没有直接接口连接，因此不合并为同一个项目。',
+		stack: ['Deno', 'TypeScript', 'React', 'Cloudflare', 'SQLite / D1', '微信 API'],
+		links: [
+			{ label: '查看上游项目', href: 'https://github.com/liyown/ai-trend-publish' },
+		],
 	},
 	{
 		number: '04',
-		title: '多模态技术选型与名片识别',
-		context: '业务需要从图片、语音和文档中稳定提取结构化信息。',
-		work: '对视觉、ASR 和 OCR 候选方案进行测试与选型，并用 Qwen2.5-VL 完成名片字段提取与结构化存储。',
-		stack: ['Qwen2.5-VL', 'OCR', 'ASR', '模型评测'],
+		kind: '自主原型',
+		title: '热点线索台与 IP 选题库',
+		context: '为个人 IP 孵化建立一个可持续更新的热点入口，集中查看不同来源的主题、热度变化和来源健康状态。',
+		work: '从 NewsNow 公共源定时采集热点，使用唯一键增量入库，只在排名、热度或摘要变化时写快照；通过 MySQL FULLTEXT ngram 支持中文检索，并提供精简的 AI 搜索接口和同步运行状态。',
+		boundary: '当前是可运行原型，数据源依赖公共 NewsNow 服务；正式使用需要自建数据源并补充更完整的采集监控、权限与内容合规策略。',
+		stack: ['Node.js', 'MySQL', 'FULLTEXT', 'NewsNow', '定时采集'],
+		links: [],
 	},
 ];
 ---
@@ -38,7 +56,7 @@ const projects = [
 <!doctype html>
 <html lang="zh-CN">
 	<head>
-		<BaseHead title="项目 | luanluan1" description="AI 应用、RAG、多模态与数据工程项目。" />
+		<BaseHead title="项目 | luanluan1" description="AI 内容工作流、Agent 工具与数据工程项目。" />
 	</head>
 	<body>
 		<Header />
@@ -46,18 +64,27 @@ const projects = [
 			<header class="page-intro">
 				<p class="eyebrow">PROJECTS</p>
 				<h1>项目</h1>
-				<p>我在项目中主要负责把模型能力接入业务，并处理数据、工作流、部署与验收问题。</p>
+				<p>按实际产品边界整理项目，不把每个文件夹都算成独立作品。重点记录我做过的工程部分，以及开源二次开发的边界。</p>
 			</header>
 			<section class="project-detail-list" aria-label="项目列表">
 				{projects.map((project) => (
 					<article class="project-detail">
 						<p class="project-number">{project.number}</p>
 						<div>
+							<p class="project-kind">{project.kind}</p>
 							<h2>{project.title}</h2>
 							<dl>
-								<div><dt>场景</dt><dd>{project.context}</dd></div>
-								<div><dt>工作</dt><dd>{project.work}</dd></div>
+								<div><dt>定位</dt><dd>{project.context}</dd></div>
+								<div><dt>实现</dt><dd>{project.work}</dd></div>
+								<div><dt>边界</dt><dd>{project.boundary}</dd></div>
 							</dl>
+							{project.links.length > 0 && (
+								<div class="project-links">
+									{project.links.map((link) => (
+										<a class="text-link" href={link.href} target="_blank" rel="noreferrer">{link.label} ↗</a>
+									))}
+								</div>
+							)}
 							<ul class="tag-list" aria-label="技术栈">
 								{project.stack.map((item) => <li>{item}</li>)}
 							</ul>
