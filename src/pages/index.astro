@@ -12,19 +12,19 @@ const latestPosts = (await getCollection('blog'))
 
 const projects = [
 	{
+		title: 'RAG 知识检索与问答',
+		description: '面向创投信息检索场景，处理多知识库接入、向量检索、缓存与 API 调度。',
+		tags: ['RAGFlow', 'Dify', 'Python'],
+	},
+	{
+		title: '会议纪要与结构化总结',
+		description: '组合语音转写、说话人处理与 LLM 总结，将会议内容整理为决策点和待办事项。',
+		tags: ['ASR', 'LLM', '工作流'],
+	},
+	{
 		title: '创投情报与多渠道发布工作台',
 		description: '从创投资讯采集、结构化抽取和图卡生成，一直连接到带人工确认的小红书 MCP 发布。',
 		tags: ['TypeScript', 'Playwright', 'MCP'],
-	},
-	{
-		title: 'Code Archaeology Skill',
-		description: '从本地 Git 历史采集可审计证据，辅助 Agent 解释模块演化、关键提交和遗留约束。',
-		tags: ['Python', 'Git', 'Codex Skill'],
-	},
-	{
-		title: 'TrendPublish 二次开发',
-		description: '围绕微信公众号内容工作流，处理本地运行、配置中心和多运行时环境的适配问题。',
-		tags: ['Deno', 'React', 'Cloudflare'],
 	},
 ];
 ---
