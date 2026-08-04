@@ -1,4 +1,4 @@
 User-agent: *
-Allow: /
+Disallow: /_astro/
 
 Sitemap: https://luanluan1.github.io/sitemap-index.xml

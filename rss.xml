@@ -1,1 +1,171 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0"><channel><title>luanluan1 | AI 应用开发</title><description>记录 RAG、Agent、模型评测与后端可靠性的实践和反思。</description><link>https://luanluan1.github.io/</link><item><title>从“调用成功”到“业务可靠”：Agent 的副作用工具</title><link>https://luanluan1.github.io/blog/agent-side-effect-tools/</link><guid isPermaLink="true">https://luanluan1.github.io/blog/agent-side-effect-tools/</guid><description>当 Agent 能够退款、建单或发送通知时，超时、重试和并发会让一次简单调用变成状态管理问题。</description><pubDate>Tue, 04 Aug 2026 00:00:00 GMT</pubDate></item><item><title>从训练集到 QLoRA：微调入门概念串起来</title><link>https://luanluan1.github.io/blog/finetuning-lora-qlora-basics/</link><guid isPermaLink="true">https://luanluan1.github.io/blog/finetuning-lora-qlora-basics/</guid><description>训练集、验证集、Loss、梯度、Batch、梯度累积、LoRA 和 QLoRA 分别位于训练流程的哪一层。</description><pubDate>Tue, 04 Aug 2026 02:40:00 GMT</pubDate></item><item><title>LangChain 与 LangGraph：从调用组件到控制业务流程</title><link>https://luanluan1.github.io/blog/langchain-langgraph-production-workflow/</link><guid isPermaLink="true">https://luanluan1.github.io/blog/langchain-langgraph-production-workflow/</guid><description>固定 Pipeline、状态图、人工确认、失败补偿和上下文记忆分别解决什么问题，以及它们如何组合。</description><pubDate>Tue, 04 Aug 2026 02:20:00 GMT</pubDate></item><item><title>小模型先走、大模型兜底：路由之前先建立评测</title><link>https://luanluan1.github.io/blog/model-routing-and-evaluation/</link><guid isPermaLink="true">https://luanluan1.github.io/blog/model-routing-and-evaluation/</guid><description>模型路由不能只依赖模型自报信心。应从业务风险出发，建立节点指标、升级条件和可观测记录。</description><pubDate>Tue, 04 Aug 2026 02:30:00 GMT</pubDate></item><item><title>RAG 权限不应只留在原始文件上</title><link>https://luanluan1.github.io/blog/rag-permission-boundary/</link><guid isPermaLink="true">https://luanluan1.github.io/blog/rag-permission-boundary/</guid><description>文档被切片并写入向量库后，原始文件的权限不会自动跟随。权限必须进入切片、检索和缓存的每一层。</description><pubDate>Mon, 03 Aug 2026 00:00:00 GMT</pubDate></item></channel></rss>
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>luanluan1</title><description>CZC · AI 应用开发</description><link>https://luanluan1.github.io/</link><templateTheme>Firefly</templateTheme><templateThemeVersion>6.15.6</templateThemeVersion><templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl><lastBuildDate>2026年8月4日 13:52:51</lastBuildDate><item><title>从‘调用成功’到‘业务可靠’：Agent 的副作用工具</title><link>https://luanluan1.github.io/posts/agent-side-effect-tools/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/agent-side-effect-tools/</guid><description>当 Agent 能够退款、建单或发送通知时，超时、重试和并发会让一次简单调用变成状态管理问题。</description><pubDate>Tue, 04 Aug 2026 03:00:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初对 Agent 工具的理解很直接：模型收集参数，用户确认，调用退款接口，然后根据返回值回复。这条链路在 Demo 中没问题，但在生产环境里，最危险的恰恰是那些“没有明确返回值”的情况。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;超时不等于失败&lt;a href=&quot;#超时不等于失败&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;请求超时时，只能确定客户端没有在规定时间内收到响应，不能确定对方没有处理。&lt;/p&gt;&lt;p&gt;一次退款请求可能已经被支付平台受理，只是回包在网络中丢失。如果系统把超时标记为失败，然后用新的业务编号再发起一次，就可能产生两笔退款。&lt;/p&gt;&lt;p&gt;因此退款状态不只有成功和失败，至少还需要：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;pending -&amp;gt; processing -&amp;gt; succeeded&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;                      &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; failed&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;                      &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; unknown&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;unknown&lt;/code&gt; 表示外部系统的真实结果暂时无法确定。此时不应告诉用户“退款失败，请重试”，而是使用原业务编号查询平台状态。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;幂等键要保持稳定&lt;a href=&quot;#幂等键要保持稳定&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;可以在调用外部平台前创建唯一的 &lt;code&gt;refund_id&lt;/code&gt;，并在所有重试中继续使用它：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;refund_id: RF202608040001&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;order_id: ORDER123&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;status: pending&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;provider_status: unknown&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;唯一编号本身不等于完整的幂等。数据库需要唯一约束，支付平台也需要识别这个编号，或者提供状态查询能力。如果外部平台两者都不支持，代码就无法严格保证“只执行一次”。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;查询后更新不是原子操作&lt;a href=&quot;#查询后更新不是原子操作&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;两个 Worker 都可能先查到 &lt;code&gt;pending&lt;/code&gt;，然后同时执行退款。安全的抢占需要把条件和更新放在同一条数据库语句里：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;UPDATE&lt;/span&gt;&lt;span&gt; refunds&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;SET&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;status&lt;/span&gt;&lt;span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;/span&gt;&lt;span&gt;&apos;processing&apos;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;WHERE&lt;/span&gt;&lt;span&gt;&lt;span&gt; refund_id &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt; :refund_id&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;AND&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;status&lt;/span&gt;&lt;span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;/span&gt;&lt;span&gt;&apos;pending&apos;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;只有影响行数为 &lt;code&gt;1&lt;/code&gt; 的 Worker 才获得执行权。其他 Worker 看到影响行数为 &lt;code&gt;0&lt;/code&gt;，应立即停止。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Agent 不是真实状态的来源&lt;a href=&quot;#agent-不是真实状态的来源&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;模型可以识别意图、收集参数和解释结果，但不应决定退款是否真正成功。最终输出应由持久化的业务状态决定：&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;succeeded&lt;/code&gt;：可以告知用户退款成功。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;failed&lt;/code&gt;：只能在有明确拒绝结果时输出失败。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;pending / processing / unknown&lt;/code&gt;：只能输出处理中，并继续查询或转人工对账。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;这个问题让我重新划分了 Agent 的责任：模型负责理解和表达，确定性代码负责权限、状态和副作用。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>RAG 权限不应只留在原始文件上</title><link>https://luanluan1.github.io/posts/rag-permission-boundary/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/rag-permission-boundary/</guid><description>文档被切片并写入向量库后，原始文件的权限不会自动跟随。权限必须进入切片、检索和缓存的每一层。</description><pubDate>Tue, 04 Aug 2026 02:50:00 GMT</pubDate><content:encoded>&lt;p&gt;企业知识库通常从文件系统开始。销售文档对销售开放，财务制度只对财务开放。但文件进入 RAG 后会被切成许多 chunk，每个 chunk 再转换为向量。如果只把正文和向量写入向量库，原始文件的权限边界就丢了。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;切片必须携带来源和权限元数据&lt;a href=&quot;#切片必须携带来源和权限元数据&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;每个 chunk 至少需要保留：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;{&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;chunk_id&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;policy-2026-08-001-03&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;document_id&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;policy-2026-08-001&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;tenant_id&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;tenant-a&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;department&quot;&lt;/span&gt;&lt;span&gt;: [&lt;/span&gt;&lt;span&gt;&quot;finance&quot;&lt;/span&gt;&lt;span&gt;],&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;role&quot;&lt;/span&gt;&lt;span&gt;: [&lt;/span&gt;&lt;span&gt;&quot;manager&quot;&lt;/span&gt;&lt;span&gt;, &lt;/span&gt;&lt;span&gt;&quot;finance-specialist&quot;&lt;/span&gt;&lt;span&gt;],&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;effective_from&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;2026-08-01&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;version&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;3&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;}&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;这些字段不是让模型自己理解权限，而是让检索系统在查询时直接做元数据过滤。无权的 chunk 不应进入 Top-K 结果，更不应发送给模型。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;权限不应复制到每个用户&lt;a href=&quot;#权限不应复制到每个用户&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;如果一位员工从销售调到财务，逐个更新所有向量切片里的用户 ID，不仅成本高，也容易遗漏。&lt;/p&gt;&lt;p&gt;更稳定的做法是：&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;chunk 保存“访问这份知识需要什么条件”。&lt;/li&gt;
+&lt;li&gt;用户保存当前部门、角色和特别授权。&lt;/li&gt;
+&lt;li&gt;每次请求根据最新身份与 chunk 元数据计算是否允许。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;这样调岗时只需修改员工的权限信息，而不是重建所有向量。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;检索过滤后还要做一次权威校验&lt;a href=&quot;#检索过滤后还要做一次权威校验&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;向量库元数据可能由于同步延迟而过期。因此在获取 chunk 正文前，还应该使用 &lt;code&gt;document_id&lt;/code&gt; 请求权威权限服务进行二次校验。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;向量库前置过滤 -&amp;gt; 减少无权候选&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;权威权限校验   -&amp;gt; 防止过期元数据泄露正文&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;第一层解决效率，第二层解决安全。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;缓存也是权限边界的一部分&lt;a href=&quot;#缓存也是权限边界的一部分&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;chunk 缓存命中后，仍然要根据当前用户权限做校验。最终回答缓存更危险，因为敏感内容已经被模型改写到答案里，无法通过删除某个 chunk 安全地脱敏。&lt;/p&gt;&lt;p&gt;回答缓存键至少需要包含 tenant、角色或权限版本。对高敏感场景，可以不缓存最终回答，只缓存可再次授权的中间结果。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;引用 chunk_id 不等于安全完成&lt;a href=&quot;#引用-chunk_id-不等于安全完成&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;模型能输出 &lt;code&gt;chunk_id&lt;/code&gt;，不代表引用真实、相关或当前用户有权访问。后端还需要验证：&lt;/p&gt;&lt;ol&gt;
+&lt;li&gt;这个 ID 是否来自本次检索结果。&lt;/li&gt;
+&lt;li&gt;对应切片是否仍在有效版本和权限范围内。&lt;/li&gt;
+&lt;li&gt;切片内容是否真正支持当前结论。&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;对我来说，RAG 的权限问题并不是“给向量加个标签”就结束了。它是贯穿文档、切片、检索、正文读取、缓存和引用验证的完整链路。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;文档版本要能被明确选择&lt;a href=&quot;#文档版本要能被明确选择&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;制度文档经常同时存在当前版和历史版。只在文件名上加日期还不够，文档和 chunk 都应保存 &lt;code&gt;version&lt;/code&gt;、&lt;code&gt;effective_from&lt;/code&gt;、&lt;code&gt;effective_to&lt;/code&gt; 与 &lt;code&gt;is_current&lt;/code&gt;。&lt;/p&gt;&lt;p&gt;正常提问默认检索当前有效版本；当用户明确询问“去年”“当时”或指定日期时，再把问题时间转换成版本过滤条件。模型可以识别时间意图，但最终选择哪一版仍由检索规则决定。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;评测要拆开检索和回答&lt;a href=&quot;#评测要拆开检索和回答&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;“用户觉得回答不错”无法定位 RAG 的问题出在哪一层。至少要分别观察：&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;检索召回率：标准答案需要的 chunk 是否进入 Top-K。&lt;/li&gt;
+&lt;li&gt;证据精确率：召回的 chunk 中，有多少真正与问题相关。&lt;/li&gt;
+&lt;li&gt;引用正确率：输出的 &lt;code&gt;chunk_id&lt;/code&gt; 是否确实支持对应结论。&lt;/li&gt;
+&lt;li&gt;回答忠实度：回答是否只使用检索证据，没有补写证据外的事实。&lt;/li&gt;
+&lt;li&gt;任务完成率：用户最终是否完成业务目标。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;用户反馈仍然有价值，但它更适合发现未知问题，不能代替带标准答案和标准证据的离线测试集。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>LangChain 与 LangGraph：从调用组件到控制业务流程</title><link>https://luanluan1.github.io/posts/langchain-langgraph-production-workflow/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/langchain-langgraph-production-workflow/</guid><description>固定 Pipeline、状态图、人工确认、失败补偿和上下文记忆分别解决什么问题，以及它们如何组合。</description><pubDate>Tue, 04 Aug 2026 02:40:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初容易把 LangChain 和 LangGraph 当成两个需要二选一的框架。更准确的理解是：LangChain 偏向提供模型、Prompt、检索器和工具调用等组件，LangGraph 偏向控制这些组件以什么状态、顺序和分支运行。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;先判断任务是否需要“记住执行到哪一步”&lt;a href=&quot;#先判断任务是否需要记住执行到哪一步&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;如果流程总是从上到下执行，失败就结束，普通代码或固定 Pipeline 已经足够：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;识别意图 -&amp;gt; 提取参数 -&amp;gt; 校验格式 -&amp;gt; 调用查询 -&amp;gt; 生成回答&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;当流程出现以下要求时，状态图更合适：&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;需要根据结果走不同分支。&lt;/li&gt;
+&lt;li&gt;需要暂停等待用户确认或人工审核。&lt;/li&gt;
+&lt;li&gt;工具超时后要查询状态，再决定是否重试。&lt;/li&gt;
+&lt;li&gt;进程重启后要从上次成功节点继续。&lt;/li&gt;
+&lt;li&gt;部分步骤失败后，要执行补偿操作。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;LangGraph 的价值不只是把节点画成图，而是把业务状态持久化，让系统知道“已经完成什么、下一步允许做什么”。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;请假流程可以保持固定，但状态要明确&lt;a href=&quot;#请假流程可以保持固定但状态要明确&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;一个请假 Agent 可以使用稳定的主流程：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;收集请假类型和日期&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; 查询剩余假期&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; 展示可编辑确认单&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; 创建请假申请&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; 发送通知&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;它的状态不应只存在聊天文本里，可以单独记录：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;{&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;request_id&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;LEAVE202608040001&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;user_id&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;USER123&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;leave_type&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;annual&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;start_date&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;2026-08-10&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;end_date&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;2026-08-11&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;confirmed&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;true&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;status&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;&quot;processing&quot;&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;completed_steps&quot;&lt;/span&gt;&lt;span&gt;: [&lt;/span&gt;&lt;span&gt;&quot;validated&quot;&lt;/span&gt;&lt;span&gt;, &lt;/span&gt;&lt;span&gt;&quot;confirmed&quot;&lt;/span&gt;&lt;span&gt;, &lt;/span&gt;&lt;span&gt;&quot;created&quot;&lt;/span&gt;&lt;span&gt;],&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;10&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;&quot;error_code&quot;&lt;/span&gt;&lt;span&gt;: &lt;/span&gt;&lt;span&gt;null&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;11&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;}&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;固定流程和 LangGraph 并不冲突。Pipeline 描述正常路径，Graph 负责分支、暂停、恢复和异常路径。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;失败不一定要撤销前面所有操作&lt;a href=&quot;#失败不一定要撤销前面所有操作&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;“通知发送失败”不等于“请假申请创建失败”。如果申请已经被审批系统受理，直接删除申请再重跑，反而可能制造重复数据。&lt;/p&gt;&lt;p&gt;更安全的处理是按业务语义决定：&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;可重试：通知使用稳定的 &lt;code&gt;notification_id&lt;/code&gt; 重试。&lt;/li&gt;
+&lt;li&gt;可补偿：确实需要撤销时，调用明确的取消申请接口。&lt;/li&gt;
+&lt;li&gt;不可自动恢复：保留已完成状态和错误原因，转人工处理。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;补偿操作是另一个明确的业务动作，不是数据库意义上的“时间倒流”。它本身也需要权限、幂等和审计。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;对话上下文不等于业务状态&lt;a href=&quot;#对话上下文不等于业务状态&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;模型支持长上下文，只表示它能读取更多文字，不表示它可靠地保存了业务状态。&lt;/p&gt;&lt;p&gt;通常可以分成三层：&lt;/p&gt;&lt;ol&gt;
+&lt;li&gt;最近若干轮原始对话，用于理解代词和当前话题。&lt;/li&gt;
+&lt;li&gt;更早对话的结构化摘要，用于控制上下文成本。&lt;/li&gt;
+&lt;li&gt;数据库中的业务状态，用于保存确认结果、工具执行状态和幂等编号。&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;前两层帮助模型理解，第三层才是系统恢复和审计的依据。用户在执行前修改参数，可以更新待确认状态；执行后再补充，应根据已发生的业务结果决定修改、取消或新建，而不是假装第一次调用没有发生。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;我的选择规则&lt;a href=&quot;#我的选择规则&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;单次问答、检索和简单工具组合：先用普通代码或 LangChain 组件。&lt;/li&gt;
+&lt;li&gt;固定且短的业务流程：使用显式 Pipeline，并把参数校验写在确定性代码里。&lt;/li&gt;
+&lt;li&gt;有分支、暂停、重试、恢复和人工介入：使用 LangGraph 一类状态图。&lt;/li&gt;
+&lt;li&gt;涉及退款、建单、通知等副作用：无论用什么框架，都必须单独设计幂等、权限和状态查询。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;框架解决的是编排方式，不会自动替我补齐业务可靠性。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>小模型先走、大模型兜底：路由之前先建立评测</title><link>https://luanluan1.github.io/posts/model-routing-and-evaluation/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/model-routing-and-evaluation/</guid><description>模型路由不能只依赖模型自报信心。应从业务风险出发，建立节点指标、升级条件和可观测记录。</description><pubDate>Tue, 04 Aug 2026 02:30:00 GMT</pubDate><content:encoded>&lt;p&gt;“先调用小模型，小模型觉得不行再调用大模型”听起来能省成本，但其中最不可靠的部分是“小模型觉得”。语言模型生成的置信分数不一定经过校准，写出 &lt;code&gt;0.93&lt;/code&gt; 不代表它真的有 93% 的正确概率。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;先按节点拆模型，而不是整个 Agent 只选一个模型&lt;a href=&quot;#先按节点拆模型而不是整个-agent-只选一个模型&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;一个 AI 应用可以在不同节点使用不同能力：&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;节点&lt;/th&gt;&lt;th&gt;适合先尝试的方案&lt;/th&gt;&lt;th&gt;需要升级的信号&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;意图分类&lt;/td&gt;&lt;td&gt;小模型或分类模型&lt;/td&gt;&lt;td&gt;类别接近、出现未知意图、高风险业务&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;日期与金额提取&lt;/td&gt;&lt;td&gt;规则加小模型&lt;/td&gt;&lt;td&gt;格式校验失败、字段冲突、缺少必要参数&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;向量检索&lt;/td&gt;&lt;td&gt;Embedding 模型&lt;/td&gt;&lt;td&gt;召回证据不足或多个版本冲突&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;判断与回答&lt;/td&gt;&lt;td&gt;大模型&lt;/td&gt;&lt;td&gt;需要跨文档推理、证据矛盾或任务风险高&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;退款执行&lt;/td&gt;&lt;td&gt;确定性后端代码&lt;/td&gt;&lt;td&gt;不交给模型自由决定&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;模型大小不是唯一变量。规则、结构化输出、检索质量和工具接口设计，常常比直接换更大模型更有效。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;升级条件要来自可验证信号&lt;a href=&quot;#升级条件要来自可验证信号&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;比“模型自评分低于 0.9”更可靠的信号包括：&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;分类概率的第一名和第二名差距过小。&lt;/li&gt;
+&lt;li&gt;JSON Schema 校验不通过。&lt;/li&gt;
+&lt;li&gt;日期、金额与订单数据库记录不一致。&lt;/li&gt;
+&lt;li&gt;RAG 没有召回足够证据，或证据相互矛盾。&lt;/li&gt;
+&lt;li&gt;输入属于退款、权限变更等高风险类别。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;阈值不能凭感觉固定成 &lt;code&gt;0.9&lt;/code&gt;。它应在验证集上测试：不同阈值分别会漏掉多少错误、增加多少成本和延迟，再按业务损失选择。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;指标要能定位具体环节&lt;a href=&quot;#指标要能定位具体环节&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;只看最终“用户是否满意”，无法判断问题是出在检索、分类还是工具执行。可以分层观察：&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层级&lt;/th&gt;&lt;th&gt;典型指标&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;意图与抽取&lt;/td&gt;&lt;td&gt;分类准确率、字段 Exact Match、必填字段完整率&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;RAG&lt;/td&gt;&lt;td&gt;Recall@K、证据精确率、引用正确率、回答忠实度&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;工具&lt;/td&gt;&lt;td&gt;调用成功率、参数校验失败率、幂等冲突率、未知状态率&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;端到端&lt;/td&gt;&lt;td&gt;任务完成率、人工介入率、P95 延迟、单任务成本&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;精准正确率和任务完成率并不相同。系统可能召回了很多内容，用户仍然完成任务；也可能引用非常准确，却因为流程中断而没有完成业务目标。两者都要测。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;用户反馈是线索，不是标准答案&lt;a href=&quot;#用户反馈是线索不是标准答案&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;点赞、差评和文字反馈适合发现测试集没有覆盖的问题。但用户可能误解制度，也可能只因答案不合预期而打低分。&lt;/p&gt;&lt;p&gt;问题进入修复前，应先归因：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;意图分类错误&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;检索未召回&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;召回证据错误&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;模型脱离证据回答&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;工具参数或权限错误&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;外部系统失败&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;不同原因对应不同修复。分类错误可以补样本、改提示词或换模型；检索错误应检查切片和召回；工具状态错误不能靠提示词解决。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;上线时先影子测试，再逐步替换&lt;a href=&quot;#上线时先影子测试再逐步替换&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;新模型可以先读取真实流量但不影响用户结果，记录它与旧模型的差异，这叫影子测试。确认效果后，再把少量流量切给新模型，逐步扩大范围。&lt;/p&gt;&lt;p&gt;日志至少记录模型版本、Prompt 版本、脱敏后的输入、结构化输出、工具错误、引用 &lt;code&gt;chunk_id&lt;/code&gt;、延迟和成本。银行卡号等敏感信息不应直接进入日志；需要时用掩码、代号或受控查询替代。&lt;/p&gt;&lt;p&gt;也不需要保存模型完整的隐藏思考过程。更适合审计的是可验证的决策摘要、证据引用、规则命中和工具状态。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>从训练集到 QLoRA：微调入门概念串起来</title><link>https://luanluan1.github.io/posts/finetuning-lora-qlora-basics/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/finetuning-lora-qlora-basics/</guid><description>训练集、验证集、Loss、梯度、Batch、梯度累积、LoRA 和 QLoRA 分别位于训练流程的哪一层。</description><pubDate>Tue, 04 Aug 2026 02:20:00 GMT</pubDate><content:encoded>&lt;p&gt;模型训练的术语容易被逐个记住，却没有连成一条流程。这篇笔记从“是否需要微调”开始，把数据、训练循环和参数高效微调放在同一张图里理解。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;先区分 RAG、结构化输出和微调&lt;a href=&quot;#先区分-rag结构化输出和微调&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;知识经常变化、回答需要引用文档：优先 RAG。&lt;/li&gt;
+&lt;li&gt;只是要求稳定 JSON：先使用模型的结构化输出、Schema 校验和重试。&lt;/li&gt;
+&lt;li&gt;需要模型稳定学会一种行为、风格或领域映射，且有足够高质量样本：再考虑微调。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;微调不是给模型上传一份会频繁更新的公司制度。它更适合改变模型“怎么做”，RAG 更适合提供“现在知道什么”。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;训练集、验证集和测试集&lt;a href=&quot;#训练集验证集和测试集&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;数据集&lt;/th&gt;&lt;th&gt;用途&lt;/th&gt;&lt;th&gt;什么时候看&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;训练集&lt;/td&gt;&lt;td&gt;计算 Loss 和梯度，更新可训练参数&lt;/td&gt;&lt;td&gt;每个训练步骤&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;验证集&lt;/td&gt;&lt;td&gt;选择超参数、判断过拟合、选择检查点&lt;/td&gt;&lt;td&gt;训练过程中定期评估&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;测试集&lt;/td&gt;&lt;td&gt;对最终方案做一次尽量无偏的评估&lt;/td&gt;&lt;td&gt;方案确定后&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;验证集不是人工随便问几个问题。它是一组不参与参数更新的固定样本，用于比较学习率、训练轮数和 LoRA 秩等方案。&lt;/p&gt;&lt;p&gt;如果不断根据测试集结果调参数，测试集事实上就变成了验证集，最终分数会被“调高”，无法代表真实泛化能力。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Loss、梯度和学习率&lt;a href=&quot;#loss梯度和学习率&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;&lt;code&gt;Loss&lt;/code&gt; 是模型输出与训练目标之间的误差度量。反向传播会计算每个可训练参数对 Loss 的影响方向和大小，这个量叫梯度。优化器再根据梯度更新参数。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;输入 -&amp;gt; 前向计算 -&amp;gt; Loss&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;                  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; 反向传播得到梯度&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;                  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; 优化器更新参数&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;学习率控制每次沿梯度方向走多远：&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;太小：收敛慢，有限训练时间内可能还没学到。&lt;/li&gt;
+&lt;li&gt;太大：容易越过较好的位置，Loss 震荡甚至发散，也可能出现梯度爆炸。&lt;/li&gt;
+&lt;li&gt;梯度消失通常与网络结构、激活和长链路传播有关，不是“学习率大”的同义词。&lt;/li&gt;
+&lt;/ul&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Epoch、Batch 和 Batch Size&lt;a href=&quot;#epochbatch-和-batch-size&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;&lt;code&gt;Epoch&lt;/code&gt; 表示完整遍历一遍训练集。&lt;code&gt;Batch&lt;/code&gt; 是一次前向和反向计算使用的一组样本，&lt;code&gt;batch_size&lt;/code&gt; 是其中样本数量。&lt;/p&gt;&lt;p&gt;假设训练集有 1,000 条数据，&lt;code&gt;batch_size=10&lt;/code&gt;，那么一个 Epoch 大约有 100 个训练步骤。&lt;/p&gt;&lt;p&gt;Batch 太大可能爆显存，也可能改变优化特性；太小会让梯度噪声更大，并且不能充分利用硬件并行。它不是单纯的“越大越快”。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;梯度累积是在多个小 Batch 后再更新&lt;a href=&quot;#梯度累积是在多个小-batch-后再更新&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;显存只能放下 &lt;code&gt;batch_size=8&lt;/code&gt;，但希望接近 Batch 32 的更新效果，可以连续计算 4 个小 Batch，把梯度先累加起来，最后再执行一次优化器更新：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;8 条 -&amp;gt; 计算梯度 --\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;8 条 -&amp;gt; 计算梯度 ---+&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;8 条 -&amp;gt; 计算梯度 ---+-&amp;gt; 一次参数更新&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;8 条 -&amp;gt; 计算梯度 --/&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;此时有效 Batch Size 约为：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;micro_batch_size × accumulation_steps × GPU 数量&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;8 × 4 × 1 = 32&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;它降低的是单次需要保存的激活显存，不会免掉四次前向和反向计算，因此训练时间仍然存在。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;LoRA 只训练一个低秩增量&lt;a href=&quot;#lora-只训练一个低秩增量&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;完整微调会更新基础模型的大量权重。LoRA 冻结原权重矩阵 &lt;code&gt;W&lt;/code&gt;，训练两个更小的矩阵 &lt;code&gt;A&lt;/code&gt; 和 &lt;code&gt;B&lt;/code&gt;，用它们的乘积表示权重增量：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;W&apos; = W + B × A&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;如果 &lt;code&gt;W&lt;/code&gt; 很大，而中间的秩 &lt;code&gt;r&lt;/code&gt; 很小，&lt;code&gt;A&lt;/code&gt; 和 &lt;code&gt;B&lt;/code&gt; 的参数量就远少于直接训练 &lt;code&gt;W&lt;/code&gt;。训练时梯度只更新 LoRA 参数，部署时可以单独加载适配器，也可以在需要时合并到基础权重。&lt;/p&gt;&lt;p&gt;低秩是一种假设：完成当前任务所需的权重变化，可以用较低维度表达。&lt;code&gt;r&lt;/code&gt; 太小可能学不够，太大则增加显存、计算和过拟合风险。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;QLoRA 是量化基础模型加 LoRA&lt;a href=&quot;#qlora-是量化基础模型加-lora&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;量化是用更少的比特近似表示权重。FP16 每个权重大约 2 字节，4-bit 每个权重理论上约 0.5 字节。&lt;/p&gt;&lt;p&gt;以 7B 模型的基础权重粗略估算：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;FP16: 7B × 2 字节   ≈ 14 GB&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;4-bit: 7B × 0.5 字节 ≈ 3.5 GB&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;QLoRA 通常把冻结的基础模型量化为 4-bit，LoRA 参数仍使用 BF16 或 FP16 训练。计算时框架会按需要把量化权重还原到适合矩阵计算的精度，但不会更新基础权重，梯度仍然只进入 LoRA 适配器。&lt;/p&gt;&lt;p&gt;&lt;code&gt;3.5 GB&lt;/code&gt; 只是在估算基础权重。实际训练还需要量化元数据、激活值、LoRA 参数、梯度和框架工作区，所以显存占用会更高。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;如何判断过拟合&lt;a href=&quot;#如何判断过拟合&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;典型信号是训练 Loss 继续下降，但验证集 Loss 开始上升，或者验证任务指标持续下降。此时可以：&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;选择验证表现最好的检查点，而不是最后一个检查点。&lt;/li&gt;
+&lt;li&gt;使用 Early Stopping，在验证指标长期不再改善时停止。&lt;/li&gt;
+&lt;li&gt;增加高质量数据、减少重复样本或降低训练轮数。&lt;/li&gt;
+&lt;li&gt;调整学习率、LoRA 秩、Dropout 等超参数。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;最后只在测试集上评估选定方案。这样得到的结果才更接近模型面对新数据时的表现。&lt;/p&gt;&lt;/section&gt;</content:encoded></item></channel></rss>
