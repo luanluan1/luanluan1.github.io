@@ -1,4 +1,114 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>luanluan1</title><description>CZC · AI 应用开发</description><link>https://luanluan1.github.io/</link><templateTheme>Firefly</templateTheme><templateThemeVersion>6.15.6</templateThemeVersion><templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl><lastBuildDate>2026年8月6日 09:55:21</lastBuildDate><item><title>从‘调用成功’到‘业务可靠’：Agent 的副作用工具</title><link>https://luanluan1.github.io/posts/agent-side-effect-tools/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/agent-side-effect-tools/</guid><description>当 Agent 能够退款、建单或发送通知时，超时、重试和并发会让一次简单调用变成状态管理问题。</description><pubDate>Tue, 04 Aug 2026 03:00:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初对 Agent 工具的理解很直接：模型收集参数，用户确认，调用退款接口，然后根据返回值回复。这条链路在 Demo 中没问题，但在生产环境里，最危险的恰恰是那些“没有明确返回值”的情况。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>luanluan1</title><description>CZC · AI 应用开发</description><link>https://luanluan1.github.io/</link><templateTheme>Firefly</templateTheme><templateThemeVersion>6.15.6</templateThemeVersion><templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl><lastBuildDate>2026年8月14日 11:14:13</lastBuildDate><item><title>如何构建一个 Agent</title><link>https://luanluan1.github.io/posts/how-to-build-an-agent/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/how-to-build-an-agent/</guid><description>从任务边界、上下文、模型、工具、状态、安全和验证七层拆开 Agent，并用 Codex 与 Claude Code 说明一次任务怎样完成。</description><pubDate>Fri, 14 Aug 2026 02:40:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初理解 Agent 时，注意力总在模型上。模型能不能识别意图，能不能挑对工具，Prompt 要怎样写。拿 Codex 和 Claude Code 对照以后，这个解释很快就不够用了。它们能够在陌生项目里搜索代码、修改文件、运行测试，失败后还能根据新报错继续工作。模型只负责每一轮的判断，外面还有一套 Runtime 在准备信息、执行工具和检查结果。&lt;/p&gt;
+&lt;p&gt;构建 Agent 的问题因此可以拆开。先定义任务和成功条件，再准备上下文，让模型选择下一步动作。Runtime 校验工具调用并保存状态，验证器根据真实结果决定继续、完成或转人工。&lt;/p&gt;
+&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;尚未完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已经完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;风险过高或状态不明&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务目标与成功条件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;准备当前上下文&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型选择下一步动作&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验并执行工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;记录结果与业务状态&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;验证任务结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;输出结果和证据&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待人工处理&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;尚未完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已经完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;风险过高或状态不明&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务目标与成功条件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;准备当前上下文&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型选择下一步动作&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验并执行工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;记录结果与业务状态&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;验证任务结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;输出结果和证据&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待人工处理&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;
+&lt;section&gt;&lt;h2&gt;先分清模型、Workflow 和 Agent&lt;a href=&quot;#先分清模型workflow-和-agent&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;模型接收输入并生成一次输出。它可以回答问题，也可以返回结构化的工具调用参数。&lt;/p&gt;&lt;p&gt;Workflow 把执行顺序写在程序里。请假系统可以固定执行参数收集、余额校验、用户确认和创建申请。每一步何时发生，由代码决定。&lt;/p&gt;&lt;p&gt;Agent 允许模型根据当前状态选择下一步。代码排查时，它可以先搜索错误码，也可以沿着调用关系读取文件。测试失败以后，它再决定继续修改还是换一个假设。&lt;/p&gt;&lt;p&gt;生产系统经常把两者放在一起。退款校验、权限和状态更新走固定流程，模型处理意图理解、信息补全和异常解释。这样既保留灵活性，也能管住有副作用的操作。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;七层结构&lt;a href=&quot;#七层结构&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;层&lt;/th&gt;&lt;th&gt;负责的问题&lt;/th&gt;&lt;th&gt;主要产物&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;任务层&lt;/td&gt;&lt;td&gt;要完成什么，什么状态算成功&lt;/td&gt;&lt;td&gt;目标、边界、验收条件&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;上下文层&lt;/td&gt;&lt;td&gt;这一轮应该让模型看到什么&lt;/td&gt;&lt;td&gt;Prompt、项目规则、检索结果、工具返回&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;模型层&lt;/td&gt;&lt;td&gt;下一步采取什么动作&lt;/td&gt;&lt;td&gt;回答、工具选择、结构化参数&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;工具层&lt;/td&gt;&lt;td&gt;怎样读取环境并改变外部系统&lt;/td&gt;&lt;td&gt;Tool Schema、执行结果、错误类型&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;状态与编排层&lt;/td&gt;&lt;td&gt;已经做到哪一步，接下来允许走哪里&lt;/td&gt;&lt;td&gt;任务状态、分支、暂停与恢复&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;安全与可靠性层&lt;/td&gt;&lt;td&gt;怎样限制风险并处理未知结果&lt;/td&gt;&lt;td&gt;权限、审批、幂等、审计&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;验证与评测层&lt;/td&gt;&lt;td&gt;怎样证明任务完成并持续改进&lt;/td&gt;&lt;td&gt;测试证据、指标、执行记录&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;这些层会在一次任务里交替工作。分层的意义在于出现问题时能知道该改哪里。检索漏掉制度文档，应检查上下文层。退款重复执行，应检查工具和可靠性。模型已经给出正确参数，系统却在重启后丢失进度，应检查状态持久化。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;任务层先写清成功条件&lt;a href=&quot;#任务层先写清成功条件&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;“帮我处理退款”只有目标，没有验收条件。系统还需要确认用户身份、订单归属、可退金额和当前退款状态。最后怎样回复，也必须由业务状态决定。&lt;/p&gt;&lt;p&gt;代码 Agent 同样需要边界。“修复登录报错”至少要说明允许修改的仓库、需要运行的测试，以及能否新增依赖。成功条件可以写成测试通过、构建成功并且变更范围符合要求。&lt;/p&gt;&lt;p&gt;Agent 容易在这一层犯错。目标写得太宽，模型会自己补任务。验收条件只写“返回成功”，模型又可能把工具响应当成业务事实。可观察、可验证的条件更可靠。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;上下文层只提供当前需要的信息&lt;a href=&quot;#上下文层只提供当前需要的信息&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;上下文可以包含 System Prompt、用户需求、项目规则、历史状态和工具结果。知识库 Agent 还会加入 RAG 召回的文档片段，代码 Agent 则常用文本搜索、AST 和 LSP 找到相关代码。&lt;/p&gt;&lt;p&gt;信息越多，Token 消耗越大，无关内容也会干扰判断。Runtime 应该先检索和过滤，再把少量可靠信息交给模型。权限也要在检索阶段处理，模型不该看到当前用户无权访问的 Chunk。&lt;/p&gt;&lt;p&gt;这一层的检索方式、Embedding 成本和代码搜索工具，单独放在系列第一篇 &lt;a href=&quot;/posts/coding-agent-context-rag-code-search/&quot;&gt;构建 Agent（一）上下文从哪里来&lt;/a&gt; 中。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;模型层负责当前这一步的决策&lt;a href=&quot;#模型层负责当前这一步的决策&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;模型读取当前状态，输出回答或工具调用。工具调用通常使用固定 Schema，让模型明确填写工具名和参数，Runtime 再做类型与业务校验。&lt;/p&gt;&lt;p&gt;高风险任务不适合只看模型自报的置信度。退款金额提取可以先使用经过评测的小模型，输入缺失、规则冲突或者结果低于业务阈值时再升级。阈值需要从测试数据中得出，不能凭一次演示决定。&lt;/p&gt;&lt;p&gt;模型路由和节点指标可以继续阅读 &lt;a href=&quot;/posts/model-routing-and-evaluation/&quot;&gt;小模型先走、大模型兜底&lt;/a&gt;。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;工具层把决定变成现实&lt;a href=&quot;#工具层把决定变成现实&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;工具需要明确的输入、返回值和错误类型。一个退款工具至少接收订单号、退款金额和稳定的退款编号。工具内部重新查询订单并校验金额，不能因为模型已经检查过就省掉确定性校验。&lt;/p&gt;&lt;p&gt;代码 Agent 的工具通常包括文件读取、文本搜索、补丁修改、终端和 Git。通过 MCP 还可以接入工单、设计稿、数据库或公司内部服务。模型只能调用已经授权的工具，Runtime 决定调用是否执行。&lt;/p&gt;&lt;p&gt;错误返回也要能区分。参数错误可以让模型补充信息，请求超时只能说明当前结果未知，外部平台明确拒绝才可以进入失败状态。把所有异常都包装成一个 &lt;code&gt;false&lt;/code&gt;，后续就无法可靠恢复。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;状态与编排层保存执行进度&lt;a href=&quot;#状态与编排层保存执行进度&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;对话记录帮助模型理解“它”和“刚才那笔订单”指什么。业务状态负责保存已经确认的参数、完成步骤和外部操作结果。两者用途不同。&lt;/p&gt;&lt;p&gt;简单流程用普通代码或固定 Pipeline 已经够用。任务出现分支、暂停、人工确认和故障恢复时，可以使用 LangGraph 一类状态图。图里的每个节点仍然要有清楚的输入和输出，框架不会自动补齐业务规则。&lt;/p&gt;&lt;p&gt;这部分已经整理在 &lt;a href=&quot;/posts/langchain-langgraph-production-workflow/&quot;&gt;LangChain 与 LangGraph&lt;/a&gt; 中。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;安全与可靠性由程序强制执行&lt;a href=&quot;#安全与可靠性由程序强制执行&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Prompt 可以告诉模型不要删除文件，权限系统还要真的拦住删除命令。高风险工具应设置最小权限，参数进入工具后继续校验，执行前保留人工确认。调用记录需要写入审计日志。&lt;/p&gt;&lt;p&gt;副作用工具还要处理并发、超时和重复请求。退款第一次已经成功，但响应在网络中丢失，第二次请求必须继续携带同一个 &lt;code&gt;refund_id&lt;/code&gt;。Worker 抢占任务要使用原子状态更新，超时状态应记录为 &lt;code&gt;unknown&lt;/code&gt;，随后查询外部平台。&lt;/p&gt;&lt;p&gt;完整例子见 &lt;a href=&quot;/posts/agent-side-effect-tools/&quot;&gt;Agent 的副作用工具&lt;/a&gt;。RAG 场景的权限过滤见 &lt;a href=&quot;/posts/rag-permission-boundary/&quot;&gt;RAG 权限不应只留在原始文件上&lt;/a&gt;。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;验证与评测决定系统能否上线&lt;a href=&quot;#验证与评测决定系统能否上线&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;模型输出“已经修复”只能说明它作出了判断。代码 Agent 还要运行测试、类型检查和构建，必要时打开页面完成真实操作。业务 Agent 要查询数据库和外部平台状态。&lt;/p&gt;&lt;p&gt;上线前可以准备一组固定任务，记录任务完成率、关键节点成功率、人工介入比例，以及每次执行的成本和延迟。线上继续保存工具调用、错误类型和最终业务状态。某类任务经常失败时，才有证据判断应该改 Prompt、换模型、补工具还是调整流程。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Codex 和 Claude Code 怎样对应这些层&lt;a href=&quot;#codex-和-claude-code-怎样对应这些层&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;假设任务是修复登录接口偶发返回 500 的问题，并补充测试。&lt;/p&gt;&lt;p&gt;Codex 会读取用户需求和 &lt;code&gt;AGENTS.md&lt;/code&gt;，搜索登录接口和相关测试，修改代码后运行命令。测试报错会重新进入上下文，模型据此选择下一步。权限系统控制它能访问哪些文件、能否运行某条命令，最终测试和代码差异负责验证。&lt;/p&gt;&lt;p&gt;Claude Code 的过程很接近。它默认读取 &lt;code&gt;CLAUDE.md&lt;/code&gt;，也能操作文件和终端，通过 MCP 连接外部工具。Hooks 可以在工具调用前后运行确定性检查，Subagents 可以把独立调研放在单独的上下文。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;/th&gt;&lt;th&gt;Codex&lt;/th&gt;&lt;th&gt;Claude Code&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;模型生态&lt;/td&gt;&lt;td&gt;OpenAI 模型&lt;/td&gt;&lt;td&gt;Anthropic Claude 模型&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;项目说明&lt;/td&gt;&lt;td&gt;&lt;code&gt;AGENTS.md&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;code&gt;CLAUDE.md&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;常用配置&lt;/td&gt;&lt;td&gt;Codex 配置与权限体系&lt;/td&gt;&lt;td&gt;&lt;code&gt;.claude&lt;/code&gt; 配置与权限体系&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;扩展方式&lt;/td&gt;&lt;td&gt;Skills、Hooks、MCP、插件与 Subagents&lt;/td&gt;&lt;td&gt;Skills、Hooks、MCP 与 Subagents&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;常见入口&lt;/td&gt;&lt;td&gt;终端、IDE、桌面与远程任务&lt;/td&gt;&lt;td&gt;终端、IDE、桌面与浏览器任务&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;两者的产品功能会继续变化。面试时可以把区别放在模型生态、项目规则和配置方式上，随后回到共同的执行过程。用户给出目标，Runtime 准备上下文，模型选择工具，执行结果写回状态，验证通过后才输出完成。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;面试时可以怎样回答&lt;a href=&quot;#面试时可以怎样回答&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;blockquote&gt;&lt;p&gt;我会把 Agent 拆成任务、上下文、模型、工具、状态、安全和验证七层。先确定任务边界与验收条件，再让 Runtime 准备当前需要的信息。模型负责选择下一步动作，工具负责读取或改变外部环境，状态层保存执行进度。高风险操作由权限、审批和幂等机制保护，最后使用测试或业务状态验证结果。&lt;/p&gt;&lt;p&gt;Codex 和 Claude Code 都可以用来解释这套结构。它们会读取项目规则，搜索和修改代码，再运行测试。Codex 默认使用 &lt;code&gt;AGENTS.md&lt;/code&gt;，Claude Code 默认使用 &lt;code&gt;CLAUDE.md&lt;/code&gt;。两者的模型与配置生态不同，Agent 的执行循环很接近。&lt;/p&gt;&lt;/blockquote&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;系列阅读顺序&lt;a href=&quot;#系列阅读顺序&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;a href=&quot;/posts/coding-agent-context-rag-code-search/&quot;&gt;构建 Agent（一）上下文从哪里来&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;工具 Schema、参数校验与错误设计&lt;/li&gt;
+&lt;li&gt;状态、编排和故障恢复&lt;/li&gt;
+&lt;li&gt;权限、幂等与人工确认&lt;/li&gt;
+&lt;li&gt;验证、评测和模型路由&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;后面的主题已经有部分独立笔记，总纲会随着学习继续补链接。第一篇先把上下文讲清楚，因为模型每一次决策，都受它当时看到的信息限制。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;参考资料&lt;a href=&quot;#参考资料&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://learn.chatgpt.com/docs/codex/cli&quot; target=&quot;_blank&quot;&gt;Codex CLI&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://learn.chatgpt.com/docs/agent-configuration/agents-md&quot; target=&quot;_blank&quot;&gt;Codex 的 AGENTS.md 说明&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://code.claude.com/docs/en/overview&quot; target=&quot;_blank&quot;&gt;Claude Code 概览&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://code.claude.com/docs/en/memory&quot; target=&quot;_blank&quot;&gt;Claude Code 的项目记忆&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://code.claude.com/docs/en/hooks&quot; target=&quot;_blank&quot;&gt;Claude Code Hooks&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://code.claude.com/docs/en/sub-agents&quot; target=&quot;_blank&quot;&gt;Claude Code Subagents&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;/section&gt;</content:encoded></item><item><title>从‘调用成功’到‘业务可靠’：Agent 的副作用工具</title><link>https://luanluan1.github.io/posts/agent-side-effect-tools/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/agent-side-effect-tools/</guid><description>当 Agent 能够退款、建单或发送通知时，超时、重试和并发会让一次简单调用变成状态管理问题。</description><pubDate>Tue, 04 Aug 2026 03:00:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初对 Agent 工具的理解很直接：模型收集参数，用户确认，调用退款接口，然后根据返回值回复。这条链路在 Demo 中没问题，但在生产环境里，最危险的恰恰是那些“没有明确返回值”的情况。&lt;/p&gt;
 &lt;section&gt;&lt;h2&gt;超时不等于失败&lt;a href=&quot;#超时不等于失败&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;请求超时时，只能确定客户端没有在规定时间内收到响应，不能确定对方没有处理。&lt;/p&gt;&lt;p&gt;一次退款请求可能已经被支付平台受理，只是回包在网络中丢失。如果系统把超时标记为失败，然后用新的业务编号再发起一次，就可能产生两笔退款。&lt;/p&gt;&lt;p&gt;因此退款状态不只有成功和失败，至少还需要：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;pending -&amp;gt; processing -&amp;gt; succeeded&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;                      &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; failed&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;                      &lt;/span&gt;&lt;/span&gt;&lt;span&gt;-&amp;gt; unknown&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;&lt;code&gt;unknown&lt;/code&gt; 表示外部系统的真实结果暂时无法确定。此时不应告诉用户“退款失败，请重试”，而是使用原业务编号查询平台状态。&lt;/p&gt;&lt;/section&gt;
 &lt;section&gt;&lt;h2&gt;幂等键要保持稳定&lt;a href=&quot;#幂等键要保持稳定&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;可以在调用外部平台前创建唯一的 &lt;code&gt;refund_id&lt;/code&gt;，并在所有重试中继续使用它：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;refund_id: RF202608040001&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;order_id: ORDER123&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;status: pending&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;provider_status: unknown&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;唯一编号本身不等于完整的幂等。数据库需要唯一约束，支付平台也需要识别这个编号，或者提供状态查询能力。如果外部平台两者都不支持，代码就无法严格保证“只执行一次”。&lt;/p&gt;&lt;/section&gt;
 &lt;section&gt;&lt;h2&gt;查询后更新不是原子操作&lt;a href=&quot;#查询后更新不是原子操作&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;两个 Worker 都可能先查到 &lt;code&gt;pending&lt;/code&gt;，然后同时执行退款。安全的抢占需要把条件和更新放在同一条数据库语句里：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;UPDATE&lt;/span&gt;&lt;span&gt; refunds&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;SET&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;status&lt;/span&gt;&lt;span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;/span&gt;&lt;span&gt;&apos;processing&apos;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;WHERE&lt;/span&gt;&lt;span&gt;&lt;span&gt; refund_id &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt; :refund_id&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;AND&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;status&lt;/span&gt;&lt;span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;/span&gt;&lt;span&gt;&apos;pending&apos;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;只有影响行数为 &lt;code&gt;1&lt;/code&gt; 的 Worker 才获得执行权。其他 Worker 看到影响行数为 &lt;code&gt;0&lt;/code&gt;，应立即停止。&lt;/p&gt;&lt;/section&gt;
@@ -27,7 +137,74 @@
 &lt;li&gt;引用正确率：输出的 &lt;code&gt;chunk_id&lt;/code&gt; 是否确实支持对应结论。&lt;/li&gt;
 &lt;li&gt;回答忠实度：回答是否只使用检索证据，没有补写证据外的事实。&lt;/li&gt;
 &lt;li&gt;任务完成率：用户最终是否完成业务目标。&lt;/li&gt;
-&lt;/ul&gt;&lt;p&gt;用户反馈仍然有价值，但它更适合发现未知问题，不能代替带标准答案和标准证据的离线测试集。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>Transformer 数学基础（一）：张量、矩阵乘法与广播</title><link>https://luanluan1.github.io/posts/transformer-foundations-tensors-matmul-broadcasting/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/transformer-foundations-tensors-matmul-broadcasting/</guid><description>从 PyTorch 张量的 shape、dtype、device 开始，解释 768 维向量、矩阵乘法、逐元素运算和广播之间的关系。</description><pubDate>Thu, 06 Aug 2026 02:00:00 GMT</pubDate><content:encoded>&lt;p&gt;刚开始学习 Transformer 时，很容易直接记住下面这些公式：&lt;/p&gt;
+&lt;/ul&gt;&lt;p&gt;用户反馈仍然有价值，但它更适合发现未知问题，不能代替带标准答案和标准证据的离线测试集。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>构建 Agent（一）上下文从哪里来</title><link>https://luanluan1.github.io/posts/coding-agent-context-rag-code-search/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/coding-agent-context-rag-code-search/</guid><description>拆开 Agent 的上下文层，说明 RAG 与 Embedding 的成本，以及 rg、AST 和 LSP 怎样帮助代码 Agent 找到相关信息。</description><pubDate>Fri, 14 Aug 2026 02:30:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;系列总纲 &lt;a href=&quot;/posts/how-to-build-an-agent/&quot;&gt;如何构建一个 Agent&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;总纲把 Agent 拆成任务、上下文、模型、工具、状态、安全和验证七层。这一篇只看上下文。&lt;/p&gt;
+&lt;p&gt;模型每次决定下一步以前，都要先知道用户想做什么，当前任务进行到哪里，上一轮工具返回了什么。知识库 Agent 还要找到相关制度或产品文档，代码 Agent 则要从项目里找到可能相关的文件。Runtime 把这些信息挑出来，组成模型这一轮实际能看到的输入。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;上下文层装了哪些信息&lt;a href=&quot;#上下文层装了哪些信息&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;常见内容可以分成四组。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;内容&lt;/th&gt;&lt;th&gt;解决的问题&lt;/th&gt;&lt;th&gt;例子&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;固定规则&lt;/td&gt;&lt;td&gt;Agent 被允许怎样工作&lt;/td&gt;&lt;td&gt;System Prompt、项目规范、权限要求&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;当前任务&lt;/td&gt;&lt;td&gt;用户现在要什么&lt;/td&gt;&lt;td&gt;当前问题、已确认参数、验收条件&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;外部知识&lt;/td&gt;&lt;td&gt;模型原本不知道什么&lt;/td&gt;&lt;td&gt;RAG 文档片段、代码、数据库查询结果&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;执行状态&lt;/td&gt;&lt;td&gt;前面已经发生了什么&lt;/td&gt;&lt;td&gt;工具返回、错误信息、完成步骤&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;这些内容的可信程度不同。数据库中的订单状态可以决定退款结果，模型根据对话生成的摘要只能帮助理解。项目规范能够提醒 Agent 运行测试，Runtime 还要强制限制危险操作。&lt;/p&gt;&lt;p&gt;上下文也有成本。一次放入太多文件会占用上下文窗口，无关内容还可能干扰模型。Agent 通常先检索和过滤，再读取少量候选内容。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;RAG 是上下文来源之一&lt;a href=&quot;#rag-是上下文来源之一&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;需要查询企业制度、客服知识或产品文档时，RAG 很常见。它通常分成入库和查询两个阶段。&lt;/p&gt;&lt;p&gt;文档入库时，系统先切分文本，为每个 Chunk 生成向量，再保存正文、向量和权限元数据。文档新增或更新时重新处理对应部分，无需在每次提问时把所有文档重新计算一遍。&lt;/p&gt;&lt;p&gt;用户查询时，系统为当前问题生成一个向量，从向量数据库召回少量 Chunk，完成权限过滤和可选的重排，再把结果交给大模型。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;用户问题&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;生成查询向量&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;按权限和版本过滤&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;召回相关 Chunk&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;可选的 Rerank&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;10&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;11&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;相关内容进入模型上下文&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;Agent 可以通过一个检索工具使用这套服务。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;chunks &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt; knowledge_base.&lt;/span&gt;&lt;span&gt;search&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;    &lt;/span&gt;&lt;span&gt;query&lt;/span&gt;&lt;span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt;user_question,&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;    &lt;/span&gt;&lt;span&gt;user_id&lt;/span&gt;&lt;span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt;user_id,&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;    &lt;/span&gt;&lt;span&gt;top_k&lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt;5&lt;/span&gt;&lt;span&gt;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;)&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;answer &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt; llm.&lt;/span&gt;&lt;span&gt;generate&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;    &lt;/span&gt;&lt;span&gt;question&lt;/span&gt;&lt;span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt;user_question,&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;    &lt;/span&gt;&lt;span&gt;context&lt;/span&gt;&lt;span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt;chunks,&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;10&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;)&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;Embedding 模型可以运行在云端，也可以作为本地服务。Agent 只关心检索工具返回了哪些内容，以及这些内容是否带有来源、版本和权限信息。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;普通电脑能不能运行 RAG&lt;a href=&quot;#普通电脑能不能运行-rag&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;文档入库阶段计算较多。系统要为每个 Chunk 生成向量，第一次建立索引会花一些时间。查询阶段只需要处理一条问题，并在索引中寻找相似向量，计算量小得多。&lt;/p&gt;&lt;p&gt;向量占用空间可以粗略计算。十万个 &lt;code&gt;768&lt;/code&gt; 维 &lt;code&gt;float32&lt;/code&gt; 向量的原始大小约为&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;100000 × 768 × 4 字节 ≈ 307 MB&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;实际系统还要保存索引、正文和元数据。几千到几万个 Chunk 可以在普通开发电脑上运行，速度还会受到 Embedding 模型、索引类型和 CPU 性能影响。数据达到几十万或上百万，并且同时需要高并发、复杂权限和重排时，可以把 Embedding 与向量数据库拆成独立服务。&lt;/p&gt;&lt;p&gt;使用云端 Embedding API 时，向量计算发生在服务端，本地负责发送文本和保存结果。这样降低了本地硬件要求，也带来了调用费用、网络依赖和数据合规问题。&lt;/p&gt;&lt;p&gt;RAG 能减少传给大模型的文档数量，也会引入切片、召回和权限过滤方面的误差。知识库上线前要单独评测召回率，回答正确率无法替代检索评测。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;代码 Agent 经常先用精确搜索&lt;a href=&quot;#代码-agent-经常先用精确搜索&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;代码里有大量明确符号。函数名、接口路径、错误码和配置键都可以直接搜索。代码 Agent 因此常用 &lt;code&gt;rg&lt;/code&gt;、AST 和 LSP 获取上下文。&lt;/p&gt;&lt;p&gt;这三种工具的理解范围不同。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;工具&lt;/th&gt;&lt;th&gt;能理解的内容&lt;/th&gt;&lt;th&gt;常见用途&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;rg&lt;/code&gt;&lt;/td&gt;&lt;td&gt;文件中的文字&lt;/td&gt;&lt;td&gt;搜索关键词、错误码和接口路径&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;AST&lt;/td&gt;&lt;td&gt;代码的语法结构&lt;/td&gt;&lt;td&gt;查找函数调用、分析或修改语法节点&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;LSP&lt;/td&gt;&lt;td&gt;跨文件引用和类型语义&lt;/td&gt;&lt;td&gt;跳转定义、查找引用和检查类型&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;它们主要使用普通 CPU。Agent 先用这些工具缩小范围，再让大模型阅读相关代码，可以减少 Token 消耗。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;&lt;code&gt;rg&lt;/code&gt; 完成快速文本搜索&lt;a href=&quot;#rg-完成快速文本搜索&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;&lt;code&gt;rg&lt;/code&gt; 的全名是 ripgrep，可以把它理解成命令行里的项目全局搜索。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;Terminal window&lt;/span&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;rg &lt;/span&gt;&lt;span&gt;-&lt;/span&gt;&lt;span&gt;n &lt;/span&gt;&lt;/span&gt;&lt;span&gt;&quot;refundOrder&quot;&lt;/span&gt;&lt;span&gt; src tests&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;这条命令会在 &lt;code&gt;src&lt;/code&gt; 和 &lt;code&gt;tests&lt;/code&gt; 中查找包含 &lt;code&gt;refundOrder&lt;/code&gt; 的文本，并显示行号。Agent 可以先找到候选位置，再读取相关文件。&lt;/p&gt;&lt;p&gt;&lt;code&gt;rg&lt;/code&gt; 只认识文本。注释、函数定义和普通字符串里出现同一个词时，都会被搜出来。搜索错误码、接口路径和函数名时，这种能力通常已经够用。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;AST 让程序看见语法结构&lt;a href=&quot;#ast-让程序看见语法结构&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;AST 是抽象语法树。解析器会把源代码拆成有层级的语法节点。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;const&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;total&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;price&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;/span&gt;&lt;span&gt;*&lt;/span&gt;&lt;span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;count&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;解析后的结构大致是&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;变量声明&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;├─ 变量名 total&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;└─ 乘法表达式&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;   &lt;/span&gt;&lt;/span&gt;&lt;span&gt;├─ price&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;   &lt;/span&gt;&lt;/span&gt;&lt;span&gt;└─ count&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;AST 能区分变量声明、函数调用和字符串字面量。工具可以只查找对某个函数的调用，也可以批量修改满足特定结构的代码。注释里出现同一个单词，不会被当成函数调用处理。&lt;/p&gt;&lt;p&gt;AST 主要描述语法结构。跨文件导入、变量实际指向哪个定义、接口由哪些类实现，还需要类型系统和语言服务器参与。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;LSP 提供跨文件语义&lt;a href=&quot;#lsp-提供跨文件语义&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;LSP 是语言服务器协议。编辑器里的跳转到定义、查找所有引用、类型提示和重命名，很多都通过它完成。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;import&lt;/span&gt;&lt;span&gt; { &lt;/span&gt;&lt;span&gt;refundOrder&lt;/span&gt;&lt;span&gt; } &lt;/span&gt;&lt;span&gt;from&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;&quot;./refund&quot;&lt;/span&gt;&lt;span&gt;;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;await&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;refundOrder&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;&quot;ORDER123&quot;&lt;/span&gt;&lt;span&gt;);&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;文本搜索可以找到 &lt;code&gt;refundOrder&lt;/code&gt; 出现过的位置。LSP 还能判断这次调用来自哪个文件，参数类型是什么，项目中还有哪些地方引用了同一个函数。&lt;/p&gt;&lt;p&gt;它接近编辑器平时使用的代码理解能力。对于大型项目，跨文件的定义和类型信息往往比单纯搜到一个同名字符串更有用。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;一次代码检索怎样组合这些工具&lt;a href=&quot;#一次代码检索怎样组合这些工具&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;面对登录接口报错，Agent 可以先用 &lt;code&gt;rg&lt;/code&gt; 搜索接口路径和错误信息。找到候选文件后，再通过 LSP 追踪函数定义与调用关系。需要识别某类语法或批量修改时，AST 工具继续处理。模型最后阅读筛选后的代码，判断原因并制定修改方案。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;用户描述错误&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;rg 找到候选文件&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;LSP 追踪定义、引用和类型&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;AST 识别需要处理的语法结构&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;模型阅读相关代码并决定修改&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;10&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;11&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;测试、构建和差异检查&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;语义比较模糊时，也可以加入向量检索。用户只记得项目里“有一套任务恢复机制”，却不知道函数名，Embedding 有机会找到含义接近的文档或代码片段。已经知道精确符号、错误码或路径时，文本搜索与语言工具通常更直接。&lt;/p&gt;&lt;p&gt;面试里讲上下文层，可以从选择检索方式开始。知识库查询适合 RAG，代码符号优先使用 &lt;code&gt;rg&lt;/code&gt;、AST 和 LSP，工具返回继续进入下一轮上下文。Runtime 负责过滤权限和控制长度，模型只读取与当前任务相关的内容。&lt;/p&gt;&lt;blockquote&gt;&lt;p&gt;回到系列总纲 &lt;a href=&quot;/posts/how-to-build-an-agent/&quot;&gt;如何构建一个 Agent&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;/section&gt;</content:encoded></item><item><title>Transformer 数学基础（一）：张量、矩阵乘法与广播</title><link>https://luanluan1.github.io/posts/transformer-foundations-tensors-matmul-broadcasting/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/transformer-foundations-tensors-matmul-broadcasting/</guid><description>从 PyTorch 张量的 shape、dtype、device 开始，解释 768 维向量、矩阵乘法、逐元素运算和广播之间的关系。</description><pubDate>Thu, 06 Aug 2026 02:00:00 GMT</pubDate><content:encoded>&lt;p&gt;刚开始学习 Transformer 时，很容易直接记住下面这些公式：&lt;/p&gt;
 &lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;Q = XWq&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;K = XWk&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;V = XWv&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;
 &lt;p&gt;但只要遇到 &lt;code&gt;[batch, seq, hidden]&lt;/code&gt;、&lt;code&gt;768&lt;/code&gt; 维向量或广播，公式里的每个字母就又会变得抽象。这篇笔记先不讨论 Attention，而是解决更基础的问题：数据在 PyTorch 里是什么形状，矩阵乘法怎样改变形状，以及为什么偏置可以自动加到所有 Token 上。&lt;/p&gt;
 &lt;section&gt;&lt;h2&gt;Python、NumPy 和 PyTorch 分别负责什么&lt;a href=&quot;#pythonnumpy-和-pytorch-分别负责什么&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;三者都能保存一组数字，但用途并不相同。&lt;/p&gt;
