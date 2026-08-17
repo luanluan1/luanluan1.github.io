@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>luanluan1</title><description>CZC · AI 应用开发</description><link>https://luanluan1.github.io/</link><templateTheme>Firefly</templateTheme><templateThemeVersion>6.15.6</templateThemeVersion><templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl><lastBuildDate>2026年8月17日 12:19:00</lastBuildDate><item><title>如何构建一个 Agent</title><link>https://luanluan1.github.io/posts/how-to-build-an-agent/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/how-to-build-an-agent/</guid><description>从任务边界、上下文、模型、工具、状态、安全和验证七层拆开 Agent，并用 Codex 与 Claude Code 说明一次任务怎样完成。</description><pubDate>Fri, 14 Aug 2026 02:40:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初理解 Agent 时，注意力总在模型上。模型能不能识别意图，能不能挑对工具，Prompt 要怎样写。拿 Codex 和 Claude Code 对照以后，这个解释很快就不够用了。它们能够在陌生项目里搜索代码、修改文件、运行测试，失败后还能根据新报错继续工作。模型只负责每一轮的判断，外面还有一套 Runtime 在准备信息、执行工具和检查结果。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>luanluan1</title><description>CZC · AI 应用开发</description><link>https://luanluan1.github.io/</link><templateTheme>Firefly</templateTheme><templateThemeVersion>6.15.6</templateThemeVersion><templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl><lastBuildDate>2026年8月17日 12:49:01</lastBuildDate><item><title>如何构建一个 Agent</title><link>https://luanluan1.github.io/posts/how-to-build-an-agent/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/how-to-build-an-agent/</guid><description>从任务边界、上下文、模型、工具、状态、安全和验证七层拆开 Agent，并用 Codex 与 Claude Code 说明一次任务怎样完成。</description><pubDate>Fri, 14 Aug 2026 02:40:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初理解 Agent 时，注意力总在模型上。模型能不能识别意图，能不能挑对工具，Prompt 要怎样写。拿 Codex 和 Claude Code 对照以后，这个解释很快就不够用了。它们能够在陌生项目里搜索代码、修改文件、运行测试，失败后还能根据新报错继续工作。模型只负责每一轮的判断，外面还有一套 Runtime 在准备信息、执行工具和检查结果。&lt;/p&gt;
 &lt;p&gt;构建 Agent 的问题因此可以拆开。先定义任务和成功条件，再准备上下文，让模型选择下一步动作。Runtime 校验工具调用并保存状态，验证器根据真实结果决定继续、完成或转人工。&lt;/p&gt;
 &lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;尚未完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已经完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;风险过高或状态不明&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务目标与成功条件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;准备当前上下文&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型选择下一步动作&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验并执行工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;记录结果与业务状态&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;验证任务结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;输出结果和证据&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待人工处理&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
 &lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;尚未完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已经完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;风险过高或状态不明&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务目标与成功条件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;准备当前上下文&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型选择下一步动作&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验并执行工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;记录结果与业务状态&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;验证任务结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;输出结果和证据&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待人工处理&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
@@ -95,7 +95,7 @@
 &lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;维度&lt;/th&gt;&lt;th&gt;Codex&lt;/th&gt;&lt;th&gt;Claude Code&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;模型生态&lt;/td&gt;&lt;td&gt;OpenAI 模型&lt;/td&gt;&lt;td&gt;Anthropic Claude 模型&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;项目说明&lt;/td&gt;&lt;td&gt;&lt;code&gt;AGENTS.md&lt;/code&gt;&lt;/td&gt;&lt;td&gt;&lt;code&gt;CLAUDE.md&lt;/code&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;常用配置&lt;/td&gt;&lt;td&gt;Codex 配置与权限体系&lt;/td&gt;&lt;td&gt;&lt;code&gt;.claude&lt;/code&gt; 配置与权限体系&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;扩展方式&lt;/td&gt;&lt;td&gt;Skills、Hooks、MCP、插件与 Subagents&lt;/td&gt;&lt;td&gt;Skills、Hooks、MCP 与 Subagents&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;常见入口&lt;/td&gt;&lt;td&gt;终端、IDE、桌面与远程任务&lt;/td&gt;&lt;td&gt;终端、IDE、桌面与浏览器任务&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;两者的产品功能会继续变化。面试时可以把区别放在模型生态、项目规则和配置方式上，随后回到共同的执行过程。用户给出目标，Runtime 准备上下文，模型选择工具，执行结果写回状态，验证通过后才输出完成。&lt;/p&gt;&lt;/section&gt;
 &lt;section&gt;&lt;h2&gt;面试时可以怎样回答&lt;a href=&quot;#面试时可以怎样回答&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;blockquote&gt;&lt;p&gt;我会把 Agent 拆成任务、上下文、模型、工具、状态、安全和验证七层。先确定任务边界与验收条件，再让 Runtime 准备当前需要的信息。模型负责选择下一步动作，工具负责读取或改变外部环境，状态层保存执行进度。高风险操作由权限、审批和幂等机制保护，最后使用测试或业务状态验证结果。&lt;/p&gt;&lt;p&gt;Codex 和 Claude Code 都可以用来解释这套结构。它们会读取项目规则，搜索和修改代码，再运行测试。Codex 默认使用 &lt;code&gt;AGENTS.md&lt;/code&gt;，Claude Code 默认使用 &lt;code&gt;CLAUDE.md&lt;/code&gt;。两者的模型与配置生态不同，Agent 的执行循环很接近。&lt;/p&gt;&lt;/blockquote&gt;&lt;/section&gt;
 &lt;section&gt;&lt;h2&gt;系列阅读顺序&lt;a href=&quot;#系列阅读顺序&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;DeepSeek Harness 的实现细节单独整理在 &lt;a href=&quot;/posts/deepseek-harness-notes/&quot;&gt;DeepSeek Harness 学习笔记&lt;/a&gt; 中。这个系列从 Agent Preset 进入，再继续拆 Cordis、会话、工具执行链和工作流。&lt;/p&gt;&lt;ol&gt;
-&lt;li&gt;&lt;a href=&quot;/posts/coding-agent-context-rag-code-search/&quot;&gt;构建 Agent（一）上下文从哪里来&lt;/a&gt;，其中 RAG 部分按照 &lt;a href=&quot;/posts/rag-document-parsing-and-chunking/&quot;&gt;文档解析与切片&lt;/a&gt;、&lt;a href=&quot;/posts/rag-retrieval-reranking-core-concepts/&quot;&gt;检索与重排&lt;/a&gt; 的顺序继续展开&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/posts/coding-agent-context-rag-code-search/&quot;&gt;构建 Agent（一）上下文从哪里来&lt;/a&gt;，其中 RAG 部分按照 &lt;a href=&quot;/posts/rag-document-parsing-and-chunking/&quot;&gt;文档解析与切片&lt;/a&gt;、&lt;a href=&quot;/posts/rag-chunking-strategies-ragflow-mapping/&quot;&gt;切片策略&lt;/a&gt;、&lt;a href=&quot;/posts/rag-retrieval-reranking-core-concepts/&quot;&gt;检索与重排&lt;/a&gt; 的顺序继续展开&lt;/li&gt;
 &lt;li&gt;工具 Schema、参数校验与错误设计&lt;/li&gt;
 &lt;li&gt;状态、编排和故障恢复&lt;/li&gt;
 &lt;li&gt;权限、幂等与人工确认&lt;/li&gt;
@@ -137,7 +137,280 @@
 &lt;li&gt;引用正确率：输出的 &lt;code&gt;chunk_id&lt;/code&gt; 是否确实支持对应结论。&lt;/li&gt;
 &lt;li&gt;回答忠实度：回答是否只使用检索证据，没有补写证据外的事实。&lt;/li&gt;
 &lt;li&gt;任务完成率：用户最终是否完成业务目标。&lt;/li&gt;
-&lt;/ul&gt;&lt;p&gt;用户反馈仍然有价值，但它更适合发现未知问题，不能代替带标准答案和标准证据的离线测试集。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>RAG 入库先做什么，文档解析与切片的边界</title><link>https://luanluan1.github.io/posts/rag-document-parsing-and-chunking/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/rag-document-parsing-and-chunking/</guid><description>从 OCR、版面识别和表格结构恢复开始，解释 MinerU、RAGFlow DeepDoc 与 Chunk 切片策略在企业 RAG 入库中的分工。</description><pubDate>Mon, 17 Aug 2026 03:30:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;上一篇 &lt;a href=&quot;/posts/rag-retrieval-reranking-core-concepts/&quot;&gt;RAG 检索与重排，从海选到答案&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;/ul&gt;&lt;p&gt;用户反馈仍然有价值，但它更适合发现未知问题，不能代替带标准答案和标准证据的离线测试集。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>RAG 切片怎么选，RAGFlow 模板背后的实现</title><link>https://luanluan1.github.io/posts/rag-chunking-strategies-ragflow-mapping/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/rag-chunking-strategies-ragflow-mapping/</guid><description>从固定长度、标题层级、条款、表格行到父子块，梳理常见 RAG 切片方法，并映射到 RAGFlow 的内置模板。</description><pubDate>Mon, 17 Aug 2026 04:30:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;上一篇 &lt;a href=&quot;/posts/rag-document-parsing-and-chunking/&quot;&gt;RAG 入库先做什么，文档解析与切片的边界&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;把文件解析成文字以后，RAG 还有一个很容易被低估的决定。哪些内容应该放在同一个 Chunk 里。&lt;/p&gt;
+&lt;p&gt;这个决定会影响三个地方。Embedding 看到什么，检索能不能命中，模型拿到片段以后能不能完整回答。Chunk 太小，条件和结论会被拆开。Chunk 太大，主题被稀释，检索结果还会占掉更多上下文。&lt;/p&gt;
+&lt;p&gt;RAGFlow 提供了 General、Manual、Paper、Book、Laws、Presentation、Table、Q&amp;amp;A、One、Picture、Tag 等内置模板，企业版还提供 Resume。它们对应不同的文档结构和答案单元。模板名称可以帮助选起点，最终效果仍然要用真实问题评测。&lt;/p&gt;
+&lt;p&gt;本文先讲通用切片方法，再看这些模板怎样组合解析器、边界信号、合并函数和元数据。RAGFlow 的版本会继续变化，文中涉及源码的地方以 2026 年 8 月 &lt;code&gt;main&lt;/code&gt; 分支为参照。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;先定义什么叫好 Chunk&lt;a href=&quot;#先定义什么叫好-chunk&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;一个可用的 Chunk，至少要同时满足这些条件。&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;用户的问题有机会从里面召回关键词、实体或语义表达。&lt;/li&gt;
+&lt;li&gt;答案中的条件、结论和限定词没有被拆到别的片段。&lt;/li&gt;
+&lt;li&gt;片段离开原文以后，仍然知道所属的产品、章节、条款或业务对象。&lt;/li&gt;
+&lt;li&gt;长度足够让 Embedding 表达主题，也不会吞掉过多模型上下文。&lt;/li&gt;
+&lt;li&gt;文件、版本、标题路径、页码、坐标和来源链接能够被追溯。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;因此，切片应当围绕“最小完整答案”设计。一个 FAQ 可能只有三行，一个法律条款可能需要带上完整父条款，一张产品表又适合按业务对象拆开。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;常见的切片方法&lt;a href=&quot;#常见的切片方法&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;section&gt;&lt;h3&gt;固定长度&lt;a href=&quot;#固定长度&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;按照字符数或 Token 数从前往后切分，通常再加一点重叠。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;Chunk 1：Token 1 到 500&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;Chunk 2：Token 451 到 950&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;Chunk 3：Token 901 到 1400&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;它简单、稳定、适用于各种纯文本，适合先做一版基线。缺点也很直接，句子、列表和章节可能在中间断开。长度和重叠比例需要用评测集调整，不能从一个通用数字推导出所有业务的答案。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;递归边界&lt;a href=&quot;#递归边界&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;递归切片会依次尝试较粗到较细的边界。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;章节标题&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;段落&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;换行&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;句号和分号&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;字符&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;只有当前单元仍然太长，才继续向下拆。它比固定位置更容易保留自然段，常用于通用文本切片。它仍然看不懂标题之间的业务关系，遇到制度条款和表格时需要额外规则。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;句子和段落&lt;a href=&quot;#句子和段落&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;先按句子或段落切开，再把相邻单元合并到目标长度。文本自然，调试也容易。只靠标点无法判断标题级别，适用条件和处理方法也可能被分到两个 Chunk。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;标题层级&lt;a href=&quot;#标题层级&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;利用 Markdown 标题、Word Heading、HTML 标题或版面识别结果建立标题路径。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;采购管理&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;└─ 采购申请&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;       &lt;/span&gt;&lt;/span&gt;&lt;span&gt;└─ 创建申请&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;正文带上完整路径以后，即使被单独召回，模型也知道它属于哪个章节。产品手册、SOP、技术文档和制度文件通常适合从这个方法开始。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;编号和条款&lt;a href=&quot;#编号和条款&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;法规和公司制度的结构经常由 &lt;code&gt;第一章&lt;/code&gt;、&lt;code&gt;第十二条&lt;/code&gt;、&lt;code&gt;1.1.2&lt;/code&gt;、&lt;code&gt;（一）&lt;/code&gt; 这些编号表达。编号本身也是引用线索，父条款、子项和限定条件应当保持在可以追踪的关系里。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;页面和幻灯片&lt;a href=&quot;#页面和幻灯片&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;以 PDF 页面或 PPT 幻灯片为边界，保留页面文字、图片和页码。它适合一页讲一个主题的课件，也方便回答“第几页写了什么”。跨页连续叙述的长文档使用这种边界时，需要额外补标题和上下文。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;表格行&lt;a href=&quot;#表格行&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;表格可以把每一行改写成带表头的自解释记录。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;产品编码：P001；产品名称：减速机；单价：5600；状态：在售&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;这种形式适合产品参数、客户字典和设备清单。涉及求和、同比、筛选和分组时，优先使用数据库或分析工具，RAG 只负责找到字段定义和说明。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;问答对&lt;a href=&quot;#问答对&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;把一个问题和标准答案放在同一个 Chunk 中，检索时提高问题字段的权重。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;问题：采购入库单审核后能否修改？&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;答案：已审核单据需要先反审核，才可以修改……&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;FAQ、客服知识和售后话术适合这样处理。问题列要覆盖用户真实说法，否则仍需 Dense 检索或同义问题增强。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;父子块&lt;a href=&quot;#父子块&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;父块保留完整章节，子块负责精确命中。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;父块：完整章节，约 1000 Token&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;子块：章节中的小段，约 200 Token&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;检索先使用子块，命中以后把父块或相邻上下文交给模型。这样可以同时照顾召回精度和回答所需的上下文。父子块会增加索引和拼接逻辑，权限、版本和引用关系也要一起维护。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;语义边界&lt;a href=&quot;#语义边界&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;为连续句子生成 Embedding，观察相邻内容的语义变化，在变化较大的位置切开。它能处理没有清晰标题的资料，代价是需要额外计算，阈值也比较敏感。编号、表头和法条之间的关系，仍然要由规则保护。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;LLM 辅助&lt;a href=&quot;#llm-辅助&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;可以让 LLM 判断主题边界、补标题、写摘要或生成问题。高价值、结构混乱的少量资料可以这样增强，全部文件交给 LLM 自由切分则会带来成本、延迟、复现和版本变化问题。&lt;/p&gt;&lt;p&gt;实际项目通常让确定性规则完成基础切片，再把模型用在标题补全、关键词、问题生成和图片描述上。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;多模态块&lt;a href=&quot;#多模态块&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;正文、图片、图注和表格可以组成一个检索单元。系统需要保存媒体对象，并用 OCR、视觉语言模型或表格解析器生成可检索描述。重要图表的原图和结构化数值应当同时保留，视觉描述不能替代精确数据。&lt;/p&gt;&lt;/section&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;RAGFlow 模板在解决什么问题&lt;a href=&quot;#ragflow-模板在解决什么问题&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;RAGFlow 的配置文档把“解析文件”定义成两个连在一起的动作。先根据文件布局生成 Chunk，再在这些 Chunk 上建立向量和全文索引。界面把两步放在同一条流程里，源码仍然使用不同解析器和切片函数完成它们。&lt;/p&gt;&lt;p&gt;当前官方文档列出的模板与支持格式大致如下。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;模板&lt;/th&gt;&lt;th&gt;主要结构信号&lt;/th&gt;&lt;th&gt;常见格式&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;General&lt;/td&gt;&lt;td&gt;分隔符和 Token 长度&lt;/td&gt;&lt;td&gt;Markdown、DOCX、XLSX、PPT、PDF、TXT、图片、CSV、JSON、EML、HTML&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Q&amp;amp;A&lt;/td&gt;&lt;td&gt;问题和答案字段&lt;/td&gt;&lt;td&gt;XLSX、CSV、TXT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Resume&lt;/td&gt;&lt;td&gt;简历字段和结构&lt;/td&gt;&lt;td&gt;DOCX、PDF、TXT，企业版&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Manual&lt;/td&gt;&lt;td&gt;目录、标题、页面位置&lt;/td&gt;&lt;td&gt;PDF&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Table&lt;/td&gt;&lt;td&gt;表头、数据行和列类型&lt;/td&gt;&lt;td&gt;XLSX、XLS、CSV、TXT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Paper&lt;/td&gt;&lt;td&gt;标题、作者、摘要和章节&lt;/td&gt;&lt;td&gt;PDF&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Book&lt;/td&gt;&lt;td&gt;长篇标题层级和长度回退&lt;/td&gt;&lt;td&gt;DOCX、PDF、TXT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Laws&lt;/td&gt;&lt;td&gt;章节、条款和子项编号&lt;/td&gt;&lt;td&gt;DOCX、PDF、TXT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Presentation&lt;/td&gt;&lt;td&gt;页面或幻灯片&lt;/td&gt;&lt;td&gt;PDF、PPTX&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Picture&lt;/td&gt;&lt;td&gt;OCR 和图片描述&lt;/td&gt;&lt;td&gt;JPEG、JPG、PNG、TIF、GIF&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;One&lt;/td&gt;&lt;td&gt;整个文件&lt;/td&gt;&lt;td&gt;DOCX、XLSX、XLS、PDF、TXT&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Tag&lt;/td&gt;&lt;td&gt;内容和标签字段&lt;/td&gt;&lt;td&gt;XLSX、CSV、TXT&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;这里的映射是理解用的简化版。实际处理还会受到文件解析器、租户配置、模型提供方和当前版本影响。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;General 适合先做基线&lt;a href=&quot;#general-适合先做基线&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;General 的主要思路是连续拿到段落、表格和图片，再按照分隔符和目标 Token 数进行合并。它关注长度和顺序，较少强制解释某种文件结构。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;解析文件&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;得到连续文本和媒体&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;按分隔符拆出候选单元&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;顺序合并到目标长度&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;生成文本块和媒体块&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;普通 Word、Markdown、HTML 和结构较规整的文本 PDF，可以用 General 建立第一版基线。它也适合拿来和专用模板做对照。&lt;/p&gt;&lt;p&gt;常见风险是相邻章节被合并，或者一个完整操作被长度边界拆开。标题是否被带入正文，还取决于前面的解析结果和清洗规则。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Manual 关注操作步骤&lt;a href=&quot;#manual-关注操作步骤&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Manual 主要面向产品手册和操作文档。当前实现会综合 PDF 目录、标题编号、页面位置、Word 标题级别、表格和图片上下文。PDF 分支还会经过 OCR、版面分析、表格分析和文本合并。&lt;/p&gt;&lt;p&gt;它适合 ERP 手册、API 使用指南、设备维护手册和有可靠目录的 SOP。一个理想的结果类似下面这样。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;库存管理 &amp;gt; 采购入库 &amp;gt; 审核入库单&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;进入采购入库列表，选择待审核单据……&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;Word 没有使用真正的 Heading 样式，或者 PDF 目录和正文不一致时，程序只能退回编号和版面启发式判断，标题路径可能不完整。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Paper 先保护论文结构&lt;a href=&quot;#paper-先保护论文结构&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Paper 会优先处理标题、作者、摘要和章节，并把表格作为独立内容处理。论文、研究报告和技术白皮书适合使用它。&lt;/p&gt;&lt;p&gt;它的专用结构也带来边界。非标准论文、参考文献和扫描版报告可能让标题识别不稳，第三方解析器输出的逻辑块也可能和 DeepDoc 不同。评测时要单独查看摘要、方法、实验和参考文献是否被正确区分。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Book 面向长篇资料&lt;a href=&quot;#book-面向长篇资料&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Book 适合教材、培训资料、长篇报告和多章节书籍。当前源码会尝试清理目录，识别部分标题形式，检测编号体系。识别到结构时使用层次合并，结构不明显时回退到普通 Token 合并。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;第五章 检索系统 &amp;gt; 5.2 向量检索&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;HNSW 通过多层图结构加速近邻查询……&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;长书不应该默认整本入库。先限定有效页码，再检查章节层级和引用位置，通常更容易得到稳定结果。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Laws 保护条款关系&lt;a href=&quot;#laws-保护条款关系&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Laws 针对法规、合同、公司规章和政策文件。它识别章节、条款和子项编号，再把内容组织成树形关系。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;员工考勤管理办法 &amp;gt; 第三章 请假管理 &amp;gt; 第十二条&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;员工请假应当提前三个工作日提交申请……&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;条款编号还能帮助定位原文。只按段落切开，容易把“适用范围”“例外情况”和“处理时限”拆散。Laws 会尽量让父条款、子项和限定条件一起进入检索和引用。&lt;/p&gt;&lt;p&gt;它仍然依赖编号质量。文档里的编号混乱、表格承载条款，或者一个条款跨越多个版面时，需要人工查看最终 Chunk。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Presentation 以页面为答案单元&lt;a href=&quot;#presentation-以页面为答案单元&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Presentation 以页面或幻灯片为天然边界。它适合培训课件、产品演示和汇报材料。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;第 8 页：区域销售分析&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;华南区本季度销售额同比增长 18%……&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;纯文本很少的图表页需要额外做图表解析或视觉描述。跨页讲一个连续结论的课件，则要把前后页标题和页码带入上下文。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Table 让每一行变得自解释&lt;a href=&quot;#table-让每一行变得自解释&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Table 按工作表、表头和数据行处理，当前文档还提到 TSI 技术和列类型推断。它适合产品参数、客户字典、设备清单和静态编码表。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;产品编码：P001；名称：减速机；额定功率：15kW；状态：在售&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;表头必须有明确业务含义。多行表头、合并单元格和空列要先清洗。经营明细的统计分析应当走数据库或分析工具，Table 更适合查找记录和字段说明。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Q&amp;amp;A 把问答当成一个单元&lt;a href=&quot;#qa-把问答当成一个单元&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Q&amp;amp;A 适合 FAQ、客服话术和售后问答。Excel、CSV 和 TXT 中的问答列可以直接组成问题与答案，标题路径也可以在某些文档中承担问题的作用。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;问题：如何重置密码？&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;答案：进入个人中心的安全设置……&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;多个问题堆在一个单元格里，会让一个 Chunk 同时对应多个意图。问题的写法也要覆盖用户实际会说的词，必要时补充同义问题。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;One 只适合真的很短的文件&lt;a href=&quot;#one-只适合真的很短的文件&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;One 将整个文件作为一个 Chunk。短公告、完整声明、产品卡片和不允许拆开的短知识适合使用它。&lt;/p&gt;&lt;p&gt;大文件使用 One 会让 Embedding 的主题变得模糊，召回也更难精确，还可能超过模型的上下文限制。完整并不自动代表更好，关键在于文件本身是否就是一个答案单元。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Picture 处理图像知识&lt;a href=&quot;#picture-处理图像知识&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Picture 会对图片执行 OCR。在文字不足时，当前实现还可能使用视觉语言模型生成描述，再把图片、文字和描述交给后续索引。&lt;/p&gt;&lt;p&gt;它适合海报、扫描图片、产品图片、流程图和图示。小字、精确数字、箭头关系和复杂图表容易在视觉描述中丢失，重要内容应当保留原图，并另外抽取结构化字段。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Tag 是检索辅助字典&lt;a href=&quot;#tag-是检索辅助字典&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Tag 数据通常由内容和标签组成。标签进入独立字段以后，可以用于分类、路由和检索增强。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;内容：K/3 WISE 15.1&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;标签：金蝶，ERP，本地部署，财务软件&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;它更适合产品线、行业、部门、业务域和同义词字典。标签库应当和正文知识分开管理，避免把一串分类词误当成完整业务说明。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Resume 适合结构化简历资料&lt;a href=&quot;#resume-适合结构化简历资料&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Resume 是 RAGFlow 文档中列出的企业版模板，适用于 DOCX、PDF 和 TXT。它的目标是把个人信息、教育背景、经历、技能等字段组织成便于检索的结构。&lt;/p&gt;&lt;p&gt;简历检索经常同时要求匹配技能、年限和项目经历。只保留连续文本，可能让技能和对应项目脱离。使用 Resume 时，应检查字段是否被正确识别，并确认个人信息的访问权限和脱敏要求。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;模板差异来自五个地方&lt;a href=&quot;#模板差异来自五个地方&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;同一个文件换一个模板，Chunk 数量和边界可能完全不同。差异通常来自五个层面。&lt;/p&gt;&lt;section&gt;&lt;h3&gt;输入解析器&lt;a href=&quot;#输入解析器&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;PPT 使用幻灯片解析，Excel 使用工作表解析，PDF 可以选择 DeepDoc、Naive、MinerU、Docling 或其他解析器。解析器输出的段落、坐标、表格和图片关系，会直接影响后续切片。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;边界信号&lt;a href=&quot;#边界信号&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;ul&gt;
+&lt;li&gt;General 看分隔符和长度。&lt;/li&gt;
+&lt;li&gt;Manual 看目录、标题和页面位置。&lt;/li&gt;
+&lt;li&gt;Laws 看章节和条款编号。&lt;/li&gt;
+&lt;li&gt;Presentation 看页面。&lt;/li&gt;
+&lt;li&gt;Table 看表头和数据行。&lt;/li&gt;
+&lt;li&gt;Q&amp;amp;A 看问题和答案字段。&lt;/li&gt;
+&lt;/ul&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;合并函数&lt;a href=&quot;#合并函数&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;源码中可以看到几类合并思路。&lt;/p&gt;&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;naive_merge&lt;/code&gt; 按顺序累加到目标 Token。&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;hierarchical_merge&lt;/code&gt; 按标题或编号层级组织内容。&lt;/li&gt;
+&lt;li&gt;条款策略先建立树，再输出父子关系。&lt;/li&gt;
+&lt;li&gt;页面策略保留页面边界。&lt;/li&gt;
+&lt;li&gt;表格策略把表头与数据行组合起来。&lt;/li&gt;
+&lt;/ul&gt;&lt;p&gt;具体函数和字段会随版本调整，阅读源码时要以当前分支为准。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;元数据&lt;a href=&quot;#元数据&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;标题路径、页码、坐标、表格类型、图片、问题和标签都会影响过滤、关键词检索、引用和页面高亮。正文看起来完整，元数据丢失以后，检索和引用仍然可能退化。&lt;/p&gt;&lt;/section&gt;&lt;section&gt;&lt;h3&gt;回退规则&lt;a href=&quot;#回退规则&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h3&gt;&lt;p&gt;结构识别失败时，有些模板会回退到普通长度合并，有些模板仍坚持按页面、数据行或整文输出。第三方解析器还可能关闭默认长度合并，尽量保留解析器返回的逻辑块。&lt;/p&gt;&lt;/section&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;一段内容换模板会怎样&lt;a href=&quot;#一段内容换模板会怎样&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;原文如下。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;第三章 采购管理&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;3.1 创建采购申请&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;申请人选择供应商并填写数量。&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;3.2 审核采购申请&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;金额超过十万元时由总经理审核。&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;同一段内容可能得到这些结果。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;策略&lt;/th&gt;&lt;th&gt;可能的结果&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;固定长度&lt;/td&gt;&lt;td&gt;在 Token 边界拆开，可能跨越 3.1 和 3.2&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;General&lt;/td&gt;&lt;td&gt;按段落和长度合并，两个小节可能在同一个 Chunk&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Manual&lt;/td&gt;&lt;td&gt;生成两个操作小节，并带上“采购管理”父标题&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Laws&lt;/td&gt;&lt;td&gt;把编号识别为条款层级，保留父子关系&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Q&amp;amp;A&lt;/td&gt;&lt;td&gt;将标题当作问题，正文作为答案&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;One&lt;/td&gt;&lt;td&gt;整份文件只有一个 Chunk&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;这些模板都没有凭空理解业务。它们使用不同的结构信号，让“十万元是审批条件”更有机会与对应的小节留在一起。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;怎么选择起点&lt;a href=&quot;#怎么选择起点&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;内容类型&lt;/th&gt;&lt;th&gt;首选&lt;/th&gt;&lt;th&gt;检查重点&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;普通文档&lt;/td&gt;&lt;td&gt;General&lt;/td&gt;&lt;td&gt;标题是否被带入，段落是否完整&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;操作手册和 SOP&lt;/td&gt;&lt;td&gt;Manual&lt;/td&gt;&lt;td&gt;Heading、目录和步骤边界&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;法规、制度和合同&lt;/td&gt;&lt;td&gt;Laws&lt;/td&gt;&lt;td&gt;长条款、例外和子项&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;论文和研究报告&lt;/td&gt;&lt;td&gt;Paper&lt;/td&gt;&lt;td&gt;摘要、正文和参考文献&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;书籍和长教材&lt;/td&gt;&lt;td&gt;Book&lt;/td&gt;&lt;td&gt;有效页码和章节层级&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;PPT&lt;/td&gt;&lt;td&gt;Presentation&lt;/td&gt;&lt;td&gt;图表页和跨页结论&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FAQ&lt;/td&gt;&lt;td&gt;Q&amp;amp;A&lt;/td&gt;&lt;td&gt;一个问答一个块&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;产品参数表&lt;/td&gt;&lt;td&gt;Table&lt;/td&gt;&lt;td&gt;表头能否独立解释数据&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;短公告&lt;/td&gt;&lt;td&gt;One&lt;/td&gt;&lt;td&gt;文件是否真的足够短&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;图片资料&lt;/td&gt;&lt;td&gt;Picture&lt;/td&gt;&lt;td&gt;OCR、数字和图表关系&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;标签词典&lt;/td&gt;&lt;td&gt;Tag&lt;/td&gt;&lt;td&gt;标签是否和正文职责分开&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;简历资料&lt;/td&gt;&lt;td&gt;Resume&lt;/td&gt;&lt;td&gt;字段识别、隐私和脱敏&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;拿不准时，可以让 General 作为基线，再用一个更贴近资料结构的模板做对照。两套结果要放到同一组真实问题上比较，不能只看 Chunk 数量或页面展示是否整齐。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;参数怎么起步&lt;a href=&quot;#参数怎么起步&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;下面的数值只能作为测试起点。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;场景&lt;/th&gt;&lt;th&gt;可测试的起点&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;普通制度&lt;/td&gt;&lt;td&gt;400 到 700 Token，约 10% 重叠&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;操作手册&lt;/td&gt;&lt;td&gt;250 到 500 Token，保留标题路径&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;法律条款&lt;/td&gt;&lt;td&gt;一条一个父块，长条款再建子块&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;FAQ&lt;/td&gt;&lt;td&gt;一个问答一个块，通常不重叠&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;长篇报告&lt;/td&gt;&lt;td&gt;父块 800 到 1500，子块 150 到 300 Token&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;表格&lt;/td&gt;&lt;td&gt;一行或一个业务对象一个块&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;RAGFlow 的模板不一定都按同一个方式使用 &lt;code&gt;chunk_token_num&lt;/code&gt;。结构策略可能优先遵守章节、页面或数据行边界，第三方解析器还可能尽量保留自己的逻辑块。界面上的 Token 数不能单独预测最终 Chunk。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;上线前怎样评测&lt;a href=&quot;#上线前怎样评测&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;我会先从真实业务中整理 30 到 100 个问题，并给每个问题标出正确文件、页码和原文位置。随后按下面顺序检查。&lt;/p&gt;&lt;ol&gt;
+&lt;li&gt;查看解析后的阅读顺序、标题和表格。&lt;/li&gt;
+&lt;li&gt;查看最终 Chunk 是否带着完整答案和限定条件。&lt;/li&gt;
+&lt;li&gt;测试 Top 5 和 Top 10 是否命中正确片段。&lt;/li&gt;
+&lt;li&gt;记录命中排名和引用位置。&lt;/li&gt;
+&lt;li&gt;把解析失败、切片失败和检索失败分开统计。&lt;/li&gt;
+&lt;li&gt;更换模板后，用同一批问题重新比较。&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;建议至少保存这些字段。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;问题&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;标准答案所在文件和页码&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;期望 Chunk&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;Top 5 是否命中&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;命中排名&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;失败环节&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;如果一个问题的答案在原始解析结果里已经被打乱，先修解析器或清洗规则。解析结果完整，最终 Chunk 缺少标题和条件，再调整切片。只有 Chunk 合理而 Top K 仍然找不到时，才继续检查 Embedding、关键词召回、权限过滤和重排。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;结尾&lt;a href=&quot;#结尾&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;固定长度、标题层级、条款、页面、表格行、问答对和父子块，都是可以迁移到不同 RAG 系统的通用方法。RAGFlow 的模板把这些方法和对应的解析器、合并函数、元数据及回退规则组合起来，方便针对资料类型选择入库路线。&lt;/p&gt;&lt;p&gt;模板名称只适合用来选起点。切片需要保留完整答案、限定条件、权限和引用位置。上线评测要检查真实问题能否稳定找到可追溯的答案单元。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;参考资料与源码&lt;a href=&quot;#参考资料与源码&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ul&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/docs/guides/dataset/configure_knowledge_base.md&quot; target=&quot;_blank&quot;&gt;RAGFlow 配置知识库与切片模板&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/docs/guides/dataset/select_pdf_parser.md&quot; target=&quot;_blank&quot;&gt;RAGFlow 选择 PDF 解析器&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/naive.py&quot; target=&quot;_blank&quot;&gt;General 与 PDF 解析入口&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/manual.py&quot; target=&quot;_blank&quot;&gt;Manual 实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/paper.py&quot; target=&quot;_blank&quot;&gt;Paper 实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/book.py&quot; target=&quot;_blank&quot;&gt;Book 实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/laws.py&quot; target=&quot;_blank&quot;&gt;Laws 实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/presentation.py&quot; target=&quot;_blank&quot;&gt;Presentation 实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/table.py&quot; target=&quot;_blank&quot;&gt;Table 实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/qa.py&quot; target=&quot;_blank&quot;&gt;Q&amp;amp;A 实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/one.py&quot; target=&quot;_blank&quot;&gt;One 实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/picture.py&quot; target=&quot;_blank&quot;&gt;Picture 实现&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/rag/app/tag.py&quot; target=&quot;_blank&quot;&gt;Tag 实现&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;&lt;blockquote&gt;&lt;p&gt;下一篇 &lt;a href=&quot;/posts/rag-retrieval-reranking-core-concepts/&quot;&gt;RAG 检索与重排，从海选到答案&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;/section&gt;</content:encoded></item><item><title>RAG 入库先做什么，文档解析与切片的边界</title><link>https://luanluan1.github.io/posts/rag-document-parsing-and-chunking/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/rag-document-parsing-and-chunking/</guid><description>从 OCR、版面识别和表格结构恢复开始，解释 MinerU、RAGFlow DeepDoc 与 Chunk 切片策略在企业 RAG 入库中的分工。</description><pubDate>Mon, 17 Aug 2026 03:30:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;下一篇 &lt;a href=&quot;/posts/rag-chunking-strategies-ragflow-mapping/&quot;&gt;RAG 切片怎么选，RAGFlow 模板背后的实现&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;我把 RAG 的检索、重排和生成理顺以后，又遇到一个更靠前的问题。知识库里的 Chunk 到底从哪里来。&lt;/p&gt;
 &lt;p&gt;很多系统把文件上传、解析、切片和建索引放在一个按钮后面。使用者看见的是“解析完成”，程序实际做了好几件事。PDF 里的文字要先恢复成正确的阅读顺序，表格要保留行列关系，标题要和正文建立层级，之后才适合决定哪些内容组成一个可检索片段。&lt;/p&gt;
 &lt;p&gt;这几步可以先这样分开。&lt;/p&gt;
@@ -263,7 +536,7 @@
 &lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/docs/guides/dataset/configure_knowledge_base.md&quot; target=&quot;_blank&quot;&gt;RAGFlow 知识库配置与切片模板&lt;/a&gt;&lt;/li&gt;
 &lt;li&gt;&lt;a href=&quot;https://github.com/infiniflow/ragflow/blob/main/docs/release_notes.md&quot; target=&quot;_blank&quot;&gt;RAGFlow 发布记录&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;&lt;blockquote&gt;&lt;p&gt;继续阅读 &lt;a href=&quot;/posts/rag-retrieval-reranking-core-concepts/&quot;&gt;RAG 检索与重排，从海选到答案&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;&lt;/section&gt;</content:encoded></item><item><title>RAG 检索与重排，从海选到答案</title><link>https://luanluan1.github.io/posts/rag-retrieval-reranking-core-concepts/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/rag-retrieval-reranking-core-concepts/</guid><description>从 BM25、Sparse Vector 和 Dense Vector 的召回，到 RRF、Reranker 与 LLM 的分工，串起企业 RAG 的生产检索流程。</description><pubDate>Mon, 17 Aug 2026 02:30:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;相关基础 &lt;a href=&quot;/posts/coding-agent-context-rag-code-search/&quot;&gt;构建 Agent（一）上下文从哪里来&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
-&lt;blockquote&gt;&lt;p&gt;入库阶段可以先看 &lt;a href=&quot;/posts/rag-document-parsing-and-chunking/&quot;&gt;RAG 入库先做什么，文档解析与切片的边界&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;blockquote&gt;&lt;p&gt;入库阶段可以先看 &lt;a href=&quot;/posts/rag-document-parsing-and-chunking/&quot;&gt;文档解析与切片的边界&lt;/a&gt;，再看 &lt;a href=&quot;/posts/rag-chunking-strategies-ragflow-mapping/&quot;&gt;RAG 切片怎么选，RAGFlow 模板背后的实现&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;我以前把 RAG 想得很简单。用户提问，系统去向量数据库里找几段文本，再把文本交给模型。整理企业知识库的检索过程以后，我发现一次查询要经过几种不同的判断。&lt;/p&gt;
 &lt;p&gt;有些问题依赖整体语义，例如“收入为什么减少”和“营收下滑的原因”应该互相找到。有些问题又必须把词找准，例如订单号、产品型号和客户名称。单一路径很难同时照顾这两种情况，所以生产 RAG 通常把召回、融合、精排和生成拆开。&lt;/p&gt;
 &lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;用户问题&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;   &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;BM25、Sparse Vector、Dense Vector 并行召回&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;   &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;RRF 合并多路排名&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;   &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;Reranker 重新判断候选内容&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;   &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;保留少量片段&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;10&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;   &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;11&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;LLM 根据片段生成答案和引用&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;
