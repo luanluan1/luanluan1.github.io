@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>luanluan1</title><description>CZC · AI 应用开发</description><link>https://luanluan1.github.io/</link><templateTheme>Firefly</templateTheme><templateThemeVersion>6.15.6</templateThemeVersion><templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl><lastBuildDate>2026年8月17日 12:49:01</lastBuildDate><item><title>如何构建一个 Agent</title><link>https://luanluan1.github.io/posts/how-to-build-an-agent/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/how-to-build-an-agent/</guid><description>从任务边界、上下文、模型、工具、状态、安全和验证七层拆开 Agent，并用 Codex 与 Claude Code 说明一次任务怎样完成。</description><pubDate>Fri, 14 Aug 2026 02:40:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初理解 Agent 时，注意力总在模型上。模型能不能识别意图，能不能挑对工具，Prompt 要怎样写。拿 Codex 和 Claude Code 对照以后，这个解释很快就不够用了。它们能够在陌生项目里搜索代码、修改文件、运行测试，失败后还能根据新报错继续工作。模型只负责每一轮的判断，外面还有一套 Runtime 在准备信息、执行工具和检查结果。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>luanluan1</title><description>CZC · AI 应用开发</description><link>https://luanluan1.github.io/</link><templateTheme>Firefly</templateTheme><templateThemeVersion>6.15.6</templateThemeVersion><templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl><lastBuildDate>2026年9月10日 09:31:18</lastBuildDate><item><title>如何构建一个 Agent</title><link>https://luanluan1.github.io/posts/how-to-build-an-agent/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/how-to-build-an-agent/</guid><description>从任务边界、上下文、模型、工具、状态、安全和验证七层拆开 Agent，并用 Codex 与 Claude Code 说明一次任务怎样完成。</description><pubDate>Fri, 14 Aug 2026 02:40:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初理解 Agent 时，注意力总在模型上。模型能不能识别意图，能不能挑对工具，Prompt 要怎样写。拿 Codex 和 Claude Code 对照以后，这个解释很快就不够用了。它们能够在陌生项目里搜索代码、修改文件、运行测试，失败后还能根据新报错继续工作。模型只负责每一轮的判断，外面还有一套 Runtime 在准备信息、执行工具和检查结果。&lt;/p&gt;
 &lt;p&gt;构建 Agent 的问题因此可以拆开。先定义任务和成功条件，再准备上下文，让模型选择下一步动作。Runtime 校验工具调用并保存状态，验证器根据真实结果决定继续、完成或转人工。&lt;/p&gt;
 &lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;尚未完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已经完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;风险过高或状态不明&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务目标与成功条件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;准备当前上下文&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型选择下一步动作&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验并执行工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;记录结果与业务状态&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;验证任务结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;输出结果和证据&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待人工处理&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
 &lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;尚未完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已经完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;风险过高或状态不明&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务目标与成功条件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;准备当前上下文&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型选择下一步动作&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验并执行工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;记录结果与业务状态&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;验证任务结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;输出结果和证据&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待人工处理&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
@@ -137,7 +137,189 @@
 &lt;li&gt;引用正确率：输出的 &lt;code&gt;chunk_id&lt;/code&gt; 是否确实支持对应结论。&lt;/li&gt;
 &lt;li&gt;回答忠实度：回答是否只使用检索证据，没有补写证据外的事实。&lt;/li&gt;
 &lt;li&gt;任务完成率：用户最终是否完成业务目标。&lt;/li&gt;
-&lt;/ul&gt;&lt;p&gt;用户反馈仍然有价值，但它更适合发现未知问题，不能代替带标准答案和标准证据的离线测试集。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>RAG 切片怎么选，RAGFlow 模板背后的实现</title><link>https://luanluan1.github.io/posts/rag-chunking-strategies-ragflow-mapping/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/rag-chunking-strategies-ragflow-mapping/</guid><description>从固定长度、标题层级、条款、表格行到父子块，梳理常见 RAG 切片方法，并映射到 RAGFlow 的内置模板。</description><pubDate>Mon, 17 Aug 2026 04:30:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;上一篇 &lt;a href=&quot;/posts/rag-document-parsing-and-chunking/&quot;&gt;RAG 入库先做什么，文档解析与切片的边界&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;/ul&gt;&lt;p&gt;用户反馈仍然有价值，但它更适合发现未知问题，不能代替带标准答案和标准证据的离线测试集。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>RTX 5090 实战 vLLM：为什么 4 并发吞吐接近单并发的 4 倍？</title><link>https://luanluan1.github.io/posts/rtx-5090-vllm-qwen25-serving-benchmark/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/rtx-5090-vllm-qwen25-serving-benchmark/</guid><description>单卡部署 Qwen2.5-7B-Instruct，比较 1、4、8 路客户端并发：吞吐从 101 增至 406 tok/s 后趋于平台，首 token 延迟却升至 1.25 秒。</description><pubDate>Thu, 10 Sep 2026 01:00:00 GMT</pubDate><content:encoded>&lt;p&gt;最近在优云智算租了一张 RTX 5090 32GB，把 Qwen2.5-7B-Instruct 从模型文件跑成了 HTTP 服务，又做了三组并发压测。&lt;/p&gt;
+&lt;p&gt;最有收获的部分发生在接口跑通之后：客户端从单并发提高到 4 并发，总输出吞吐从 &lt;strong&gt;101.22 tok/s&lt;/strong&gt; 增至 &lt;strong&gt;405.67 tok/s&lt;/strong&gt;，单个请求开始输出后的 token 间隔几乎没变。继续加到 8 并发，吞吐没有再涨，平均首 token 延迟却到了 &lt;strong&gt;1.25 秒&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;这让我开始把“模型能回答”与“服务能承受多少请求”分开看。先交代一个影响整篇结论的条件：&lt;strong&gt;服务端始终设置了 &lt;code&gt;max-num-seqs = 4&lt;/code&gt;。这次测到的是这套配置的表现，不能据此认定 RTX 5090 的最佳并发就是 4。&lt;/strong&gt;&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;从模型调用到推理服务&lt;a href=&quot;#从模型调用到推理服务&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;单独写 Python，加载模型，再调用 &lt;code&gt;transformers.generate()&lt;/code&gt;，很适合验证模型效果。当 RAG、Agent 和 Web 应用需要共同调用它时，还需要处理 HTTP 接口、请求调度和运行状态。&lt;/p&gt;&lt;p&gt;我这次搭起来的链路是：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;RAG / Agent / Web 应用&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;         &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓ HTTP 请求&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;OpenAI 兼容 API&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;         &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vLLM：模型执行与请求调度&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;         &lt;/span&gt;&lt;/span&gt;&lt;span&gt;↓&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;Qwen2.5-7B-Instruct / RTX 5090&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;Qwen 负责生成回答，vLLM 负责运行模型并组织请求。后面的实验，就是观察多个请求同时进来时，这层调度会带来什么变化。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;实验环境与服务启动&lt;a href=&quot;#实验环境与服务启动&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;下面保留的是本次实验记录中的环境版本，并非通用安装要求。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;项目&lt;/th&gt;&lt;th&gt;本次环境&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;GPU&lt;/td&gt;&lt;td&gt;NVIDIA GeForce RTX 5090&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;显存&lt;/td&gt;&lt;td&gt;32607 MiB，约 32GB&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;CPU / 内存&lt;/td&gt;&lt;td&gt;14 核 / 64GB&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;系统&lt;/td&gt;&lt;td&gt;Ubuntu 22.04&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Python&lt;/td&gt;&lt;td&gt;3.12&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;vLLM&lt;/td&gt;&lt;td&gt;0.25.1&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;PyTorch&lt;/td&gt;&lt;td&gt;2.11.0+cu130&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;PyTorch CUDA Runtime&lt;/td&gt;&lt;td&gt;13.0&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;nvidia-smi 显示的 CUDA 版本&lt;/td&gt;&lt;td&gt;13.3&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;模型&lt;/td&gt;&lt;td&gt;Qwen2.5-7B-Instruct&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;这里把 PyTorch Runtime 与 &lt;code&gt;nvidia-smi&lt;/code&gt; 的显示值分开记录，避免把两个数字当成同一个软件包版本。&lt;/p&gt;&lt;p&gt;启动前，先看 GPU 与运行环境：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;Terminal window&lt;/span&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;nvidia-smi&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;command&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;-v&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;python&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;command&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;-v&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;vllm&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;--version&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;再做一次最小 GPU 运算：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;import&lt;/span&gt;&lt;span&gt; torch&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;print&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;&quot;PyTorch:&quot;&lt;/span&gt;&lt;span&gt;, torch.&lt;/span&gt;&lt;span&gt;__version__&lt;/span&gt;&lt;span&gt;)&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;print&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;&quot;CUDA runtime:&quot;&lt;/span&gt;&lt;span&gt;, torch.version.cuda)&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;print&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;&quot;CUDA available:&quot;&lt;/span&gt;&lt;span&gt;&lt;span&gt;, torch.cuda.&lt;/span&gt;&lt;span&gt;is_available&lt;/span&gt;&lt;span&gt;())&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;print&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;&quot;GPU:&quot;&lt;/span&gt;&lt;span&gt;&lt;span&gt;, torch.cuda.&lt;/span&gt;&lt;span&gt;get_device_name&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;/span&gt;&lt;span&gt;0&lt;/span&gt;&lt;span&gt;))&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;x &lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt; torch.&lt;/span&gt;&lt;span&gt;ones&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;/span&gt;&lt;span&gt;1&lt;/span&gt;&lt;span&gt;, &lt;/span&gt;&lt;span&gt;device&lt;/span&gt;&lt;span&gt;=&lt;/span&gt;&lt;span&gt;&quot;cuda&quot;&lt;/span&gt;&lt;span&gt;)&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;print&lt;/span&gt;&lt;span&gt;(&lt;/span&gt;&lt;span&gt;&quot;GPU test:&quot;&lt;/span&gt;&lt;span&gt;&lt;span&gt;, (x &lt;/span&gt;&lt;span&gt;+&lt;/span&gt;&lt;span&gt; x).&lt;/span&gt;&lt;span&gt;item&lt;/span&gt;&lt;span&gt;())&lt;/span&gt;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;本次 &lt;code&gt;CUDA available&lt;/code&gt; 返回 &lt;code&gt;True&lt;/code&gt;，识别到 RTX 5090，运算结果为 &lt;code&gt;2.0&lt;/code&gt;。&lt;/p&gt;&lt;p&gt;模型复用了平台挂载的公共目录，省去了重复下载。以下命令均在 GPU 容器的 Bash 终端执行：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;Terminal window&lt;/span&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;serve&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;/model/ModelScope/Qwen/Qwen2.5-7B-Instruct&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--served-model-name&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;qwen7b&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--host&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;127.0.0.1&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--port&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;8000&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--dtype&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;half&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--max-model-len&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;4096&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--max-num-seqs&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;4&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--gpu-memory-utilization&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;0.85&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;几个参数直接影响后面的理解：&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;参数&lt;/th&gt;&lt;th&gt;含义&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;--served-model-name qwen7b&lt;/code&gt;&lt;/td&gt;&lt;td&gt;API 请求使用的模型别名&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;--dtype half&lt;/code&gt;&lt;/td&gt;&lt;td&gt;使用 FP16&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;--max-model-len 4096&lt;/code&gt;&lt;/td&gt;&lt;td&gt;单条序列的上下文上限，包含输入与输出&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;--max-num-seqs 4&lt;/code&gt;&lt;/td&gt;&lt;td&gt;每轮调度允许处理的最大 sequence 数&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;code&gt;--gpu-memory-utilization 0.85&lt;/code&gt;&lt;/td&gt;&lt;td&gt;为当前实例设置 GPU 显存预算比例，并不表示 GPU 计算利用率达到 85%&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;参数语义可对照 &lt;a href=&quot;https://docs.vllm.ai/en/latest/cli/serve/&quot; target=&quot;_blank&quot;&gt;vLLM serve 文档&lt;/a&gt;；不同版本的选项以运行环境的帮助输出为准。&lt;/p&gt;&lt;p&gt;服务监听在容器的回环地址，因此下面的调用和压测也在容器内执行。首次启动需要等待模型加载及初始化。旧部署记录里第一次请求遇到过 &lt;code&gt;Connection refused&lt;/code&gt;，稍后服务就绪后重试成功。&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;Terminal window&lt;/span&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;curl&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;-sS&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;http://127.0.0.1:8000/v1/models&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;curl&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;-sS&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;http://127.0.0.1:8000/v1/chat/completions&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;-H&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;&apos;Content-Type: application/json&apos;&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;-d&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;&apos;{&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;    &lt;/span&gt;&lt;/span&gt;&lt;span&gt;&quot;model&quot;: &quot;qwen7b&quot;,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;    &lt;/span&gt;&lt;/span&gt;&lt;span&gt;&quot;messages&quot;: [&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;      &lt;/span&gt;&lt;/span&gt;&lt;span&gt;{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;用简单中文解释什么是大模型推理。&quot;}&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;    &lt;/span&gt;&lt;/span&gt;&lt;span&gt;],&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;10&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;    &lt;/span&gt;&lt;/span&gt;&lt;span&gt;&quot;max_tokens&quot;: 256,&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;11&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;    &lt;/span&gt;&lt;/span&gt;&lt;span&gt;&quot;temperature&quot;: 0.7&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;12&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;span&gt;  &lt;/span&gt;&lt;/span&gt;&lt;span&gt;}&apos;&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;到这一步，接口已经能正常返回中文回答。接下来才是这次实验的重点。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;三组压测，先把条件摆在一起&lt;a href=&quot;#三组压测先把条件摆在一起&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;测试使用随机输入，目标输入长度 512 tokens、输出长度 128 tokens，开启 &lt;code&gt;--ignore-eos&lt;/code&gt;。服务端保持前面的启动参数。&lt;/p&gt;&lt;p&gt;单并发的命令如下：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;Terminal window&lt;/span&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;bench&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;serve&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--backend&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;openai-chat&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--base-url&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;http://127.0.0.1:8000&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--endpoint&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;/v1/chat/completions&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--model&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;qwen7b&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--tokenizer&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;/model/ModelScope/Qwen/Qwen2.5-7B-Instruct&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--dataset-name&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;random&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;8&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--num-prompts&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;20&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;9&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--max-concurrency&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;1&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;10&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--random-input-len&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;512&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;11&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--random-output-len&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;128&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;\&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;12&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;  &lt;/span&gt;&lt;span&gt;--ignore-eos&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;第二组把 &lt;code&gt;--max-concurrency&lt;/code&gt; 改为 &lt;code&gt;4&lt;/code&gt;。第三组把它改为 &lt;code&gt;8&lt;/code&gt;，&lt;strong&gt;同时将 &lt;code&gt;--num-prompts&lt;/code&gt; 改为 &lt;code&gt;40&lt;/code&gt;&lt;/strong&gt;，并非所有条件完全相同。基准工具选项见 &lt;a href=&quot;https://docs.vllm.ai/en/latest/cli/bench/serve/&quot; target=&quot;_blank&quot;&gt;vLLM bench serve 文档&lt;/a&gt;。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;指标&lt;/th&gt;&lt;th&gt;客户端并发 1&lt;/th&gt;&lt;th&gt;客户端并发 4&lt;/th&gt;&lt;th&gt;客户端并发 8&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;请求数&lt;/td&gt;&lt;td&gt;20&lt;/td&gt;&lt;td&gt;20&lt;/td&gt;&lt;td&gt;40&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;成功 / 失败&lt;/td&gt;&lt;td&gt;20 / 0&lt;/td&gt;&lt;td&gt;20 / 0&lt;/td&gt;&lt;td&gt;40 / 0&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;测试耗时（s）&lt;/td&gt;&lt;td&gt;25.29&lt;/td&gt;&lt;td&gt;6.31&lt;/td&gt;&lt;td&gt;13.15&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;请求吞吐（req/s）&lt;/td&gt;&lt;td&gt;0.79&lt;/td&gt;&lt;td&gt;3.17&lt;/td&gt;&lt;td&gt;3.04&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;输出 token 吞吐（tok/s）&lt;/td&gt;&lt;td&gt;101.22&lt;/td&gt;&lt;td&gt;405.67&lt;/td&gt;&lt;td&gt;389.46&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;输入与输出总吞吐（tok/s）&lt;/td&gt;&lt;td&gt;529.05&lt;/td&gt;&lt;td&gt;2120.25&lt;/td&gt;&lt;td&gt;2035.55&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Mean TTFT（ms）&lt;/td&gt;&lt;td&gt;53.62&lt;/td&gt;&lt;td&gt;37.09&lt;/td&gt;&lt;td&gt;1249.35&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;P99 TTFT（ms）&lt;/td&gt;&lt;td&gt;60.99&lt;/td&gt;&lt;td&gt;55.24&lt;/td&gt;&lt;td&gt;1511.11&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Mean TPOT（ms）&lt;/td&gt;&lt;td&gt;9.53&lt;/td&gt;&lt;td&gt;9.64&lt;/td&gt;&lt;td&gt;9.78&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;P99 TPOT（ms）&lt;/td&gt;&lt;td&gt;9.55&lt;/td&gt;&lt;td&gt;9.67&lt;/td&gt;&lt;td&gt;未记录&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;第三组的 Median TTFT 为 1310.22 ms。由于请求数不同，三组不能只比较总耗时；吞吐和请求延迟更适合放在一起观察。&lt;/p&gt;&lt;p&gt;输入 512 tokens 是命令中的目标值。表格保留原始 benchmark 输出，没有用“请求数 × 512”重新计算总吞吐；聊天模板、分词与工具的实际统计口径需要结合完整日志核对。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;4 并发：总吞吐提高，单路输出节奏基本不变&lt;a href=&quot;#4-并发总吞吐提高单路输出节奏基本不变&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;从 1 到 4 并发，输出吞吐提升约 &lt;strong&gt;4.01 倍&lt;/strong&gt;，而平均 TPOT 仅从 9.53 ms 变成 9.64 ms。&lt;/p&gt;&lt;p&gt;这两个数字放在一起，比单独看“406 tok/s”更有意义。406 tok/s 是所有请求合计的输出吞吐，不代表每个用户都以这个速度收到回答。单路开始输出后的平均节奏，仍大约是每 10 ms 一个 token。&lt;/p&gt;&lt;p&gt;自回归生成需要依据之前的 token 继续生成。只有一个请求时，一轮解码中的计算规模可能不足以充分利用 GPU；多个请求一起执行时，可以把它们当前需要的计算组织成批次。vLLM 的 continuous batching 允许随请求完成和进入持续调整批次。&lt;/p&gt;&lt;p&gt;本次结果与这种批处理收益一致。不过我没有同步记录 GPU 利用率曲线，因此只能确认吞吐提高，不能据此声称已经测到 GPU 被完全吃满。&lt;/p&gt;&lt;p&gt;4 并发的平均 TTFT 还从 53.62 ms 降到了 37.09 ms，但这只是短测试的观测值。没有重复实验和受控预热，不能把它推广成“提高并发一定降低首 token 延迟”。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;8 并发：吞吐趋于平台，首 token 开始变慢&lt;a href=&quot;#8-并发吞吐趋于平台首-token-开始变慢&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;客户端并发到 8 后，总输出吞吐为 389.46 tok/s，比 4 并发略低；平均 TTFT 则从 37.09 ms 上升到 1249.35 ms，约为原来的 33.7 倍。与此同时，平均 TPOT 只有 9.78 ms。&lt;/p&gt;&lt;p&gt;用户感受到的变化大致是：等待回答开始的时间明显拉长，一旦开始输出，速度仍然接近之前。&lt;/p&gt;&lt;p&gt;这时需要区分两个参数：&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;参数&lt;/th&gt;&lt;th&gt;控制什么&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;客户端 &lt;code&gt;--max-concurrency 8&lt;/code&gt;&lt;/td&gt;&lt;td&gt;压测工具最多维持 8 个未完成请求&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;服务端 &lt;code&gt;--max-num-seqs 4&lt;/code&gt;&lt;/td&gt;&lt;td&gt;每轮最多调度 4 条 sequence&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;对于这次每个请求生成一条序列的简单场景，可以近似理解成：客户端维持 8 个请求，而服务端同一轮只给其中最多 4 条序列安排计算，其他请求需要等待调度。sequence 与 HTTP 请求并非在所有生成配置下都一一对应。&lt;/p&gt;&lt;p&gt;因此，客户端继续加压不会自动提高服务端的调度上限，也不意味着第 5 个请求必然被拒绝。本次 40 个请求全部成功，但等待时间已经反映在 TTFT 上。&lt;/p&gt;&lt;p&gt;&lt;strong&gt;调度等待是这组现象的主要解释，但还不是独立测量出的排队耗时。&lt;/strong&gt; TTFT 还包含首 token 之前的其他处理过程。要进一步确认，应结合等待队列指标和请求级时间记录；同样，这次约 4% 的吞吐下降不足以证明更高并发必然降低吞吐。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;TTFT 和 TPOT，对应两段不同的体验&lt;a href=&quot;#ttft-和-tpot对应两段不同的体验&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;TTFT（Time To First Token）衡量请求发出到收到首个 token 的时间。token 不一定对应一个汉字，所以“多久看到第一个字”只是体验上的近似说法。&lt;/p&gt;&lt;p&gt;TPOT（Time Per Output Token）描述首 token 之后，平均每个输出 token 所花的时间。流式基准通常按每条请求首 token 之后的耗时，除以后续输出 token 数来统计。它与整体输出吞吐的分母和聚合方式不同。&lt;/p&gt;&lt;p&gt;这次 8 并发的 TTFT 明显变差，而 TPOT 相对稳定，提示我优先检查排队和调度情况。只看总 tok/s，很容易漏掉用户已经开始“等半天才有反应”的问题。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;用监控补齐压测看不到的部分&lt;a href=&quot;#用监控补齐压测看不到的部分&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;vLLM 提供 Prometheus 指标端点，可以先在容器里查看：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;span&gt;&lt;/span&gt;&lt;span&gt;Terminal window&lt;/span&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;curl&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;-sS&lt;/span&gt;&lt;span&gt; &lt;/span&gt;&lt;span&gt;http://127.0.0.1:8000/metrics&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;本次记录中关注的指标包括：&lt;/p&gt;&lt;div&gt;&lt;figure&gt;&lt;figcaption&gt;&lt;/figcaption&gt;&lt;pre&gt;&lt;code&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;1&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm:num_requests_running&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;2&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm:num_requests_waiting&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;3&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm:kv_cache_usage_perc&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;4&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm:prompt_tokens_total&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;5&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm:generation_tokens_total&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;6&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm:prefix_cache_queries_total&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;7&lt;/div&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;vllm:prefix_cache_hits_total&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;&lt;/code&gt;&lt;/pre&gt;&lt;div&gt;&lt;div&gt;&lt;/div&gt;&lt;div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/figure&gt;&lt;/div&gt;&lt;p&gt;具体名称与标签以运行版本的 &lt;code&gt;/metrics&lt;/code&gt; 为准。空闲时曾观察到 running、waiting 和 KV Cache 使用指标为 0，这说明当时没有活动负载；单凭这几个值，不能判定服务的所有功能都正常，仍需配合实际请求验证。&lt;/p&gt;&lt;p&gt;下一轮我更想把 waiting、KV Cache 和 TTFT 放在同一条时间线上，观察请求增加后到底先出现什么变化。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;这次能下的结论，以及还不能下的结论&lt;a href=&quot;#这次能下的结论以及还不能下的结论&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;在单卡 RTX 5090、Qwen2.5-7B-Instruct、目标输入 512 tokens、输出 128 tokens、服务端 &lt;code&gt;max-num-seqs=4&lt;/code&gt; 的配置下，4 路客户端并发比单路获得了约 4 倍的总输出吞吐。继续加到 8 路，没有观察到更多吞吐，却出现了明显的首 token 延迟增长。&lt;/p&gt;&lt;p&gt;这是一组阶段性记录。每组只有 20 或 40 个请求，未记录重复轮次、预热与缓存控制情况；P99 尤其容易受少数样本影响。它足以帮我理解调度上限与体验之间的关系，还不足以作为硬件极限或生产容量承诺。&lt;/p&gt;&lt;p&gt;容量规划也不能直接拿注册用户数来换算并发。500 名员工可能只有少数人同时发起生成；更长的输入、更长的回答、请求到达速率以及允许的等待时间，都会改变系统实际承受的负载。&lt;/p&gt;&lt;p&gt;接下来优先做三件事：&lt;/p&gt;&lt;ol&gt;
+&lt;li&gt;将服务端 &lt;code&gt;max-num-seqs&lt;/code&gt; 设为 4、8、16，分别测试客户端 8、16、32 并发；统一请求数、预热方式和重复轮次。&lt;/li&gt;
+&lt;li&gt;改变输入与输出长度，记录 KV Cache、等待队列、TTFT 和 TPOT，找出不同负载下的吞吐与延迟边界。&lt;/li&gt;
+&lt;li&gt;单独比较前缀缓存开关及命中情况，再逐步探索 BF16、FP8、INT4 的可用方案，并同时评价回答质量。&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;之后再补 Prometheus + Grafana、Docker 部署、LiteLLM Gateway 和应用侧 tracing。这些是后续计划，不属于本次已经验证的能力。&lt;/p&gt;&lt;p&gt;第一次接口返回中文时，我确认的是模型能跑。做完这三组测试，我开始关心的是：请求多起来以后，吞吐涨了多少，用户先在哪一步感到变慢。这是这次从部署走向推理服务工程最具体的一点收获。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>RAG 切片怎么选，RAGFlow 模板背后的实现</title><link>https://luanluan1.github.io/posts/rag-chunking-strategies-ragflow-mapping/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/rag-chunking-strategies-ragflow-mapping/</guid><description>从固定长度、标题层级、条款、表格行到父子块，梳理常见 RAG 切片方法，并映射到 RAGFlow 的内置模板。</description><pubDate>Mon, 17 Aug 2026 04:30:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;上一篇 &lt;a href=&quot;/posts/rag-document-parsing-and-chunking/&quot;&gt;RAG 入库先做什么，文档解析与切片的边界&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
 &lt;p&gt;把文件解析成文字以后，RAG 还有一个很容易被低估的决定。哪些内容应该放在同一个 Chunk 里。&lt;/p&gt;
 &lt;p&gt;这个决定会影响三个地方。Embedding 看到什么，检索能不能命中，模型拿到片段以后能不能完整回答。Chunk 太小，条件和结论会被拆开。Chunk 太大，主题被稀释，检索结果还会占掉更多上下文。&lt;/p&gt;
 &lt;p&gt;RAGFlow 提供了 General、Manual、Paper、Book、Laws、Presentation、Table、Q&amp;amp;A、One、Picture、Tag 等内置模板，企业版还提供 Resume。它们对应不同的文档结构和答案单元。模板名称可以帮助选起点，最终效果仍然要用真实问题评测。&lt;/p&gt;
