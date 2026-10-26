@@ -1,4 +1,132 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>luanluan1</title><description>CZC · AI 应用开发</description><link>https://luanluan1.github.io/</link><templateTheme>Firefly</templateTheme><templateThemeVersion>6.15.6</templateThemeVersion><templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl><lastBuildDate>2026年10月26日 09:58:18</lastBuildDate><item><title>如何构建一个 Agent</title><link>https://luanluan1.github.io/posts/how-to-build-an-agent/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/how-to-build-an-agent/</guid><description>从任务边界、上下文、模型、工具、状态、安全和验证七层拆开 Agent，并用 Codex 与 Claude Code 说明一次任务怎样完成。</description><pubDate>Fri, 14 Aug 2026 02:40:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初理解 Agent 时，注意力总在模型上。模型能不能识别意图，能不能挑对工具，Prompt 要怎样写。拿 Codex 和 Claude Code 对照以后，这个解释很快就不够用了。它们能够在陌生项目里搜索代码、修改文件、运行测试，失败后还能根据新报错继续工作。模型只负责每一轮的判断，外面还有一套 Runtime 在准备信息、执行工具和检查结果。&lt;/p&gt;
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/"><channel><title>luanluan1</title><description>CZC · AI 应用开发</description><link>https://luanluan1.github.io/</link><templateTheme>Firefly</templateTheme><templateThemeVersion>6.15.6</templateThemeVersion><templateThemeUrl>https://github.com/CuteLeaf/Firefly</templateThemeUrl><lastBuildDate>2026年10月26日 10:54:39</lastBuildDate><item><title>Codex Enterprise Agent 项目全记录（一）从需求到完整产品</title><link>https://luanluan1.github.io/posts/codex-enterprise-agent-control-plane/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/codex-enterprise-agent-control-plane/</guid><description>这个企业 Agent 工作台究竟做成了什么。沿着员工处理材料的一次完整工作，介绍产品范围、系统组成、开发过程和七篇实现记录的阅读顺序。</description><pubDate>Mon, 26 Oct 2026 01:00:00 GMT</pubDate><content:encoded>&lt;p&gt;Codex Enterprise Agent 是我持续迭代的一套企业 Agent 工作台。员工通过网页描述任务、上传材料，在同一段对话里补充要求，最后取得报告或代码文件。管理员维护组织成员、模型请求额度和工具权限，控制外部写入的审批与执行。&lt;/p&gt;
+&lt;p&gt;项目基于固定版本的 Codex App Server 运行 Agent，模型通过宿主网关接入。自研部分覆盖桌面工作台、业务 API、任务与执行管理，以及文件、权限和能力目录。它已经有本机可运行版本，完成过多账号验证和前批人工反馈，最新能力仍按集中清单等待使用者验证。&lt;/p&gt;
+&lt;p&gt;这组记录按 2026 年 10 月 26 日的实现展开。项目当前完成的是工程试用，尚未验证生产高可用或大规模员工使用。下面先把产品和完整流程讲清楚，后续章节再进入实现。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;我希望同事怎样用它&lt;a href=&quot;#我希望同事怎样用它&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;最初的入口是一次性任务。用户输入要求，后台运行完，再去下载文件。随着文件分析和代码任务接入，后续修改很难用一次提交表达完整，于是产品逐渐转向持续对话。&lt;/p&gt;&lt;p&gt;用销售报表核对这条已有验收流程说明，员工先上传本期材料，要求整理区域差异并生成报告。第一轮得到文件以后，可以在同一对话追加修订材料，再要求重算。两轮共用持续工作区，历史结果仍按各自轮次保存。&lt;/p&gt;&lt;p&gt;如果统计口径缺失，Agent 可以在当前任务中提出一个必要问题，员工选择以后，同一轮继续。任务执行中也允许补充文字；补充是否已被运行时接收，以及最终是否落实，要分别显示。&lt;/p&gt;&lt;p&gt;外部操作走另一条受控路径。Agent 提出工具调用时，平台保存具体参数，再由管理员审批。对话中的请求获批后由运行层继续，手动工具试用获批后则由成员明确执行。整个过程能回到原任务查看记录。&lt;/p&gt;&lt;p&gt;这些步骤来自产品的验收场景，不能推断真实模型每次都会给出正确统计。材料能被读到、工具受到授权、报告可交付，分别有工程证据；业务结论仍要核对。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;当前有哪些可操作的页面&lt;a href=&quot;#当前有哪些可操作的页面&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;页面&lt;/th&gt;&lt;th&gt;用户在这里完成的工作&lt;/th&gt;&lt;th&gt;与其他模块的关系&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;对话空间&lt;/td&gt;&lt;td&gt;发起任务、多轮修改、补充要求、回答澄清问题、停止本轮&lt;/td&gt;&lt;td&gt;每轮连接一个 Task，沿用同一对话工作区&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;文件与记录&lt;/td&gt;&lt;td&gt;阅读报告、查看原文、下载、比较历史轮文件&lt;/td&gt;&lt;td&gt;文件归属绑定具体任务，历史查看不改变当前状态&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;历史任务&lt;/td&gt;&lt;td&gt;查看旧任务输入、事件、用量和已有产物&lt;/td&gt;&lt;td&gt;新工作统一从对话开始，旧任务不直接一键重跑&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;我的工具请求&lt;/td&gt;&lt;td&gt;查看审批状态、手动测试已允许工具&lt;/td&gt;&lt;td&gt;对话自动执行与手动执行明确区分&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Skill 目录&lt;/td&gt;&lt;td&gt;发布、下载、追加版本和选择工作说明&lt;/td&gt;&lt;td&gt;成员直接发布，版本不可覆盖，内容不授予工具权限&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;MCP 管理&lt;/td&gt;&lt;td&gt;管理员登记服务、测试发现、分发和停用工具&lt;/td&gt;&lt;td&gt;已分发工具才进入 Agent 可选范围&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;我的 Agent&lt;/td&gt;&lt;td&gt;新建、复制模板、编辑和启停个人助手&lt;/td&gt;&lt;td&gt;组合组织允许的工具与精确 Skill 版本&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;审批与助手配置&lt;/td&gt;&lt;td&gt;审批请求，维护组织 Agent 模板和工具范围&lt;/td&gt;&lt;td&gt;管理权限与任务执行资格分别判断&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;组织成员&lt;/td&gt;&lt;td&gt;添加已登记用户、调整访问权限、移出与重新加入&lt;/td&gt;&lt;td&gt;成员变更影响新请求及未结束任务&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;模型请求配额&lt;/td&gt;&lt;td&gt;调整平台、组织、成员累计请求上限&lt;/td&gt;&lt;td&gt;模型出口在真实请求前检查三层余量&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;文件输入支持 ZIP、TXT、MD、CSV，以及 XLSX、DOCX 和文字型 PDF。输出包括已有文本与代码成果，以及受限的汇总 Excel。平台没有提供在线 Office 编辑器，也没有把扫描件 OCR 包装进已完成范围。&lt;/p&gt;&lt;p&gt;界面围绕白色桌面 Web 统一过一轮。对话输入框压缩高度，Agent、模型和用量信息靠近输入；重命名、置顶和归档放回会话列表。文件阅读支持原文切换和放大，长历史详情独立滚动。这些调整来自实际使用反馈，影响的是员工能否顺畅完成工作。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;项目是怎样逐步做出来的&lt;a href=&quot;#项目是怎样逐步做出来的&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;开发顺序先解决可执行和可追踪，再补人员协作与持续对话。能力目录最后接入已有治理流程，没有另起运行系统。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;阶段&lt;/th&gt;&lt;th&gt;当时要验证的问题&lt;/th&gt;&lt;th&gt;后来形成的能力&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;运行原型&lt;/td&gt;&lt;td&gt;能否脱离桌面 UI 驱动 Codex&lt;/td&gt;&lt;td&gt;固定运行包、App Server 客户端、线程与轮次事件&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;执行管理&lt;/td&gt;&lt;td&gt;命令在哪里运行，取消后是否真的停止&lt;/td&gt;&lt;td&gt;Docker 约束、资源身份、容器停止与回收&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;持久任务&lt;/td&gt;&lt;td&gt;进程崩溃后还能知道发生了什么&lt;/td&gt;&lt;td&gt;Task/Run、启动命令、租约、事件和恢复观察&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;多账号治理&lt;/td&gt;&lt;td&gt;谁能提交、查看和执行&lt;/td&gt;&lt;td&gt;OIDC 登录、组织资格、对象归属、配额与审批&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;持续工作&lt;/td&gt;&lt;td&gt;第二轮怎样继续原文件和上下文&lt;/td&gt;&lt;td&gt;原生线程恢复、持续卷、逐轮输入与产物&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;办公交付&lt;/td&gt;&lt;td&gt;同事手中的材料和需要的结果是什么&lt;/td&gt;&lt;td&gt;Office/PDF 提取、报告阅读、Excel 输出与澄清&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;架构收敛&lt;/td&gt;&lt;td&gt;企业状态与 Codex 协议如何分开&lt;/td&gt;&lt;td&gt;Runtime Adapter，以及运行时失联后的审批关闭&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;能力中心&lt;/td&gt;&lt;td&gt;员工怎样复用说明和工具&lt;/td&gt;&lt;td&gt;内部 Skill、MCP 分发、组织模板与个人 Agent&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;P0、P1、P2 是不同阶段使用的开发标签。阅读整个项目时，按上面的问题与结果理解更清楚。早期学习记录中某项“尚未实现”，需要结合后续实现判断，不能直接当成今天的能力清单。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;整体架构和实际依赖&lt;a href=&quot;#整体架构和实际依赖&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;员工工作台与管理页面&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;控制面 API&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;身份、组织、审批、配额与能力配置&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;PostgreSQL 业务状态与事件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;持续 Runner&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Runtime Adapter&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Docker 内的 Codex App Server&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;宿主模型出口&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;DeepSeek 或测试 provider&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;宿主受控工具网关&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已允许的 MCP 服务&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;持续工作卷、会话卷与产物交付&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;员工工作台与管理页面&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;控制面 API&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;身份、组织、审批、配额与能力配置&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;PostgreSQL 业务状态与事件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;持续 Runner&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Runtime Adapter&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Docker 内的 Codex App Server&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;宿主模型出口&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;DeepSeek 或测试 provider&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;宿主受控工具网关&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已允许的 MCP 服务&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;持续工作卷、会话卷与产物交付&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;p&gt;工程主要使用 Node.js、Fastify、PostgreSQL、Docker 和 Keycloak。桌面页面沿用 HTML、CSS 和浏览器原生能力；MCP 使用已有 SDK，校验、身份协议和浏览器测试分别复用 Zod、openid-client 与 Playwright。&lt;/p&gt;&lt;p&gt;项目更接近带员工工作台的企业 Agent 控制面，并包含任务执行管理。它复用 Codex 的 Agent 循环和 Docker 引擎，重点实现企业业务状态与授权边界。当前没有接入 LangGraph，也没有开发自己的虚拟机或容器引擎。&lt;/p&gt;&lt;p&gt;开发中研究过 DeepSeek Harness 的能力组合和交互方式，例如 Agent 配置、工具与 Skill 的组织，以及当前轮内的澄清交互。当前系统使用自己的控制面、Runner 和 Codex 接入，没有引入 DSH 的 Cordis 插件运行框架。这些参考需要与实际复用的组件分别说明。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;七篇记录分别回答什么&lt;a href=&quot;#七篇记录分别回答什么&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;本篇总览&lt;/strong&gt;说明项目的目标、产品范围与开发过程。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-runtime/&quot;&gt;架构与任务生命周期&lt;/a&gt;沿一次提交，展开 Task、Run、Thread、租约和恢复。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-execution/&quot;&gt;模型出口与容器执行&lt;/a&gt;讲清 Codex 如何调用 DeepSeek、密钥放在哪里、任务怎样停止。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-governance/&quot;&gt;身份、审批与请求额度&lt;/a&gt;解释管理员、员工、工具请求和三层额度怎样协作。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-files/&quot;&gt;持续对话与办公文件交付&lt;/a&gt;展开附件、续聊、版本差异、文档提取和 Excel 结果。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-capabilities/&quot;&gt;Skill、MCP 与个人 Agent&lt;/a&gt;说明内部能力怎样发布、分发、组合和执行。&lt;/li&gt;
+&lt;li&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-delivery/&quot;&gt;验证、部署与项目复盘&lt;/a&gt;交代自动测试、人工反馈、实际缺陷、部署恢复和后续工作。&lt;/li&gt;
+&lt;/ol&gt;&lt;p&gt;只想了解作品，可以读完本篇，再看第七篇的完成状态。想追具体实现，沿一条流程逐篇看，会比先记住全部组件名称更容易。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;当前成果应当怎样表述&lt;a href=&quot;#当前成果应当怎样表述&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;能够说明的成果是员工任务流程已经连接起来，权限和外部副作用有明确的控制路径，文件与运行记录可以追踪；多轮修改沿用真实 Codex 线程和持续文件，能力配置按版本进入运行。&lt;/p&gt;&lt;p&gt;2026 年 10 月 26 日，能力中心相关实现经 PR 合并，九组 CI 作业通过。此前还有真实模型生成文档和修正代码的样例记录。免费测试模型负责验证工程路径，真实模型样例负责提供有限效果证据，两者不会相互替代。&lt;/p&gt;&lt;p&gt;仍需继续验证的包括真实办公材料、具体企业 MCP，以及第二台机器、长期运行和容量。没有员工目录同步、OAuth MCP、生产 Secret Manager 或高可用集群，也没有严格的外部业务单次写入保证。&lt;/p&gt;&lt;p&gt;下一篇从员工点击发送开始，追到数据库排队、Runner 领取，以及一个 Run 最终怎样结束。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>如何构建一个 Agent</title><link>https://luanluan1.github.io/posts/how-to-build-an-agent/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/how-to-build-an-agent/</guid><description>从任务边界、上下文、模型、工具、状态、安全和验证七层拆开 Agent，并用 Codex 与 Claude Code 说明一次任务怎样完成。</description><pubDate>Fri, 14 Aug 2026 02:40:00 GMT</pubDate><content:encoded>&lt;p&gt;我最初理解 Agent 时，注意力总在模型上。模型能不能识别意图，能不能挑对工具，Prompt 要怎样写。拿 Codex 和 Claude Code 对照以后，这个解释很快就不够用了。它们能够在陌生项目里搜索代码、修改文件、运行测试，失败后还能根据新报错继续工作。模型只负责每一轮的判断，外面还有一套 Runtime 在准备信息、执行工具和检查结果。&lt;/p&gt;
 &lt;p&gt;构建 Agent 的问题因此可以拆开。先定义任务和成功条件，再准备上下文，让模型选择下一步动作。Runtime 校验工具调用并保存状态，验证器根据真实结果决定继续、完成或转人工。&lt;/p&gt;
 &lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;尚未完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已经完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;风险过高或状态不明&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务目标与成功条件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;准备当前上下文&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型选择下一步动作&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验并执行工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;记录结果与业务状态&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;验证任务结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;输出结果和证据&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待人工处理&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
 &lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;尚未完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已经完成&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;风险过高或状态不明&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务目标与成功条件&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;准备当前上下文&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型选择下一步动作&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验并执行工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;记录结果与业务状态&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;验证任务结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;输出结果和证据&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待人工处理&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
@@ -137,19 +265,396 @@
 &lt;li&gt;引用正确率：输出的 &lt;code&gt;chunk_id&lt;/code&gt; 是否确实支持对应结论。&lt;/li&gt;
 &lt;li&gt;回答忠实度：回答是否只使用检索证据，没有补写证据外的事实。&lt;/li&gt;
 &lt;li&gt;任务完成率：用户最终是否完成业务目标。&lt;/li&gt;
-&lt;/ul&gt;&lt;p&gt;用户反馈仍然有价值，但它更适合发现未知问题，不能代替带标准答案和标准证据的离线测试集。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>把 Codex 接进企业工作台之后，我补了哪些运行与权限边界</title><link>https://luanluan1.github.io/posts/codex-enterprise-agent-control-plane/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/codex-enterprise-agent-control-plane/</guid><description>记录 Codex Enterprise Agent 的实现过程，从多轮对话和办公文件处理，走到任务租约、工具审批、远程 MCP、内部 Skill 目录与个人 Agent。重点讲清企业控制面负责什么，以及外部写入结果不确定时为什么不能直接重试。</description><pubDate>Mon, 26 Oct 2026 01:00:00 GMT</pubDate><content:encoded>&lt;p&gt;这个项目起初要解决的事情很具体。员工打开一个网页，上传手里的表格或文档，描述想完成的工作，然后拿到能继续使用的报告或文件。任务执行时间可能比较长，关掉页面后还应该继续运行。&lt;/p&gt;
-&lt;p&gt;沿着这条流程做下去，问题很快落到了聊天窗口之外。谁可以提交任务，工具写入由谁批准，成员权限变了以后正在等待的请求还算不算数，执行进程失联以后能不能再跑一次。这些问题最后成了 Codex Enterprise Agent 的主要工作。&lt;/p&gt;
-&lt;p&gt;截至这篇记录，平台已完成本机多账号验证，并收到前批功能的人工反馈。最新的 HTTPS MCP 与个人 Agent 仍留在集中验收清单中。这里记录的是自主项目的实现和本地验证，长期负载与生产高可用还没有验证。&lt;/p&gt;
-&lt;section&gt;&lt;h2&gt;员工在页面上能完成什么&lt;a href=&quot;#员工在页面上能完成什么&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;工作台采用白色桌面布局。员工可以新建多轮对话，上传材料，在执行中补充文字要求，查看任务状态和工具审批结果。会话列表支持重命名、置顶、归档与恢复，避免所有工作都挤在同一个长对话里。&lt;/p&gt;&lt;p&gt;文件输入目前支持 ZIP、TXT、MD、CSV，以及 XLSX、DOCX 和文字型 PDF。输出文件可以预览、下载，并按轮次查看版本和差异。历史任务保留原始输入和已有产物，失败时有可用的中间文件，也能继续下载。&lt;/p&gt;&lt;p&gt;文件支持也有具体边界。扫描 PDF 没有接 OCR，Excel 公式不会在平台中重新计算，单文件上传仍受当前大小限制。读取失败时需要把原因留在页面上，已经输入的任务说明也要保住。为了支持办公材料，一次上传失败就丢掉整份草稿，会直接影响同事愿不愿意继续使用。&lt;/p&gt;&lt;p&gt;平台还提供成员管理和模型请求额度。额度按平台、组织、成员三层共同限制，实际可用量由三层剩余量的最小值决定。这里计量的是模型请求次数，一次任务可能请求模型多次，界面不能把一次任务误写成一次模型调用。&lt;/p&gt;&lt;/section&gt;
-&lt;section&gt;&lt;h2&gt;我把系统放在哪一层&lt;a href=&quot;#我把系统放在哪一层&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;项目整体更接近带有员工工作台的企业 Agent 控制面，同时包含任务调度和执行管理。&lt;/p&gt;&lt;p&gt;Codex App Server 承担 Agent 的模型与工具交互循环。平台通过 Runtime Adapter 调用它，管理线程和轮次事件；业务任务、成员权限、审批和额度则保留在平台中。DeepSeek 通过模型网关接入，自动化验证可以切换到免费的测试模型响应。&lt;/p&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;员工工作台与管理员页面&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;企业控制面&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;身份、组织权限、审批与配额&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Task、Run、Lease 与审计&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Runner&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Runtime Adapter&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Codex App Server&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型网关与模型 API&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;受控工具网关&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已分发的 MCP 工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Docker 执行环境与工作区&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;PostgreSQL 与产物记录&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;文件与工作区快照&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
-&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;员工工作台与管理员页面&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;企业控制面&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;身份、组织权限、审批与配额&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Task、Run、Lease 与审计&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Runner&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Runtime Adapter&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Codex App Server&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;模型网关与模型 API&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;受控工具网关&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已分发的 MCP 工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;Docker 执行环境与工作区&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;PostgreSQL 与产物记录&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;文件与工作区快照&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
-&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;p&gt;这张图里，自研的重点集中在业务治理和运行边界。模型权重、Codex 的执行循环以及 Docker 容器引擎都来自已有组件。项目没有引入 LangGraph，也没有实现自己的完整虚拟化沙箱。执行环境是在 Docker 上配置任务工作区、资源与权限约束，再管理容器生命周期和文件交付。&lt;/p&gt;&lt;p&gt;研究 DeepSeek Harness 时，我参考了能力组合和界面组织方式。当前实现使用 Codex App Server，相关工程取舍需要放回自己的任务、权限和运行模型中判断。两者的源码和运行框架没有混在一起。&lt;/p&gt;&lt;/section&gt;
-&lt;section&gt;&lt;h2&gt;业务任务和 Agent 线程为什么分开&lt;a href=&quot;#业务任务和-agent-线程为什么分开&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;员工发起的是一项业务工作，平台为它保存 Task。真正执行时会产生 Run，记录这一轮执行、所属 Runner 和租约。Agent Thread 则保存运行时对话上下文，负责让模型在后续轮次接着工作。&lt;/p&gt;&lt;p&gt;它们的生命周期会交叉，却不能互相代替。一个线程仍然存在，不足以说明员工还有执行资格；模型返回了文字，也不足以说明文件已经交付，或者外部写入已经确认。&lt;/p&gt;&lt;p&gt;因此，任务成功需要平台自己的执行和产物证据。成员权限、工具授权和额度也在控制面判断，模型上下文里记住的旧信息不能成为授权依据。&lt;/p&gt;&lt;p&gt;Runtime Adapter 在这里保持得很薄。它把线程开始、恢复、轮次提交和事件转换集中起来，Runner 继续负责租约、工作区和任务收尾。这样以后需要换运行时，可以先替换适配层及其内部执行部分，企业业务状态仍有明确归属。&lt;/p&gt;&lt;/section&gt;
-&lt;section&gt;&lt;h2&gt;一条批准过的请求，也可能必须拒绝&lt;a href=&quot;#一条批准过的请求也可能必须拒绝&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;工具审批里有一个很容易漏掉的情况。管理员批准请求以后，员工的权限可能被撤销，工具也可能被停用。先停用再启用，旧审批是否应该恢复有效，同样需要明确答案。&lt;/p&gt;&lt;p&gt;当前实现会记录成员、Agent 和工具授权的版本，并在执行前重新检查。撤权后再授权会进入新的版本，旧请求不会因此重新获得执行资格。任务已经结束、审批超过有效期，或者 Run 的租约已经失效，也会阻止继续执行。&lt;/p&gt;&lt;p&gt;数据库锁等待让这个问题更细了一步。请求进入事务时仍然有效，等到真正拿到任务锁，租约可能已经过期。如果继续使用等待前的时间判断，就会放行一条已经失效的操作。为此，审批和执行路径会在获得锁后，再依据数据库时钟检查期限。&lt;/p&gt;&lt;p&gt;恢复测试还发现过事务处理上的问题。代码更新了关闭状态，随后抛出拒绝错误，整个事务却一起回滚，界面下一次仍会看到旧审批。修复后，系统先提交关闭记录与拒绝审计，再返回失败响应。同一个幂等键重试，仍然得到关闭结果。&lt;/p&gt;&lt;p&gt;这些行为使用隔离 PostgreSQL 的真实锁竞争验证，不能只靠页面上出现一个红色提示来判断。&lt;/p&gt;&lt;/section&gt;
-&lt;section&gt;&lt;h2&gt;远程 MCP 最难处理的是结果丢失&lt;a href=&quot;#远程-mcp-最难处理的是结果丢失&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;最初平台只接部署内置的测试工具。新增通用接入后，管理员可以登记多个公共 HTTPS Streamable HTTP MCP 服务，使用无认证或 Bearer 认证，测试连接并发现工具，再显式分发给组织。&lt;/p&gt;&lt;p&gt;员工可以使用已经分发的工具，连接地址和凭据由管理员维护。不同服务提供同名工具时，平台仍然为它们分配不同身份，避免把一个服务的审批应用到另一个服务。&lt;/p&gt;&lt;p&gt;连接配置会检查公共 DNS 地址，并把实际 HTTPS 连接固定到已经检查的地址。重定向、内网和保留地址会被拒绝，TLS 校验与响应大小限制同时生效。Bearer 按组织和服务加密保存，更换端点时必须重新输入，避免把旧凭据静默发给新目标。&lt;/p&gt;&lt;p&gt;所有第三方工具在当前版本都需要审批，即使服务声明工具只读，也继续使用平台自己的审批策略。这个选择牺牲了一部分操作便利，换来了首版统一、可验证的授权行为。&lt;/p&gt;&lt;p&gt;真正麻烦的情况发生在调用已经发出以后。远端可能完成了写入，本地却因为连接中断而收不到返回值。平台此时只知道结果不确定，直接重发就可能重复写入。&lt;/p&gt;&lt;p&gt;当前处理先持久化一次执行占用，再派发远程请求。发出以后无法确认结果，工具及其所属任务进入 &lt;code&gt;outcome_unknown&lt;/code&gt;，页面显示待核实，系统不自动创建第二个 Run 来重放。&lt;/p&gt;&lt;p&gt;这保证的是平台不会自动重复派发。外部业务能否做到严格的单次写入，还需要对方系统支持幂等键、事务或补偿机制。当前项目没有把这些能力写成已经解决。&lt;/p&gt;&lt;/section&gt;
-&lt;section&gt;&lt;h2&gt;Skill 和个人 Agent 怎样组合&lt;a href=&quot;#skill-和个人-agent-怎样组合&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;内部 Skill 目录允许成员上传、下载和追加 &lt;code&gt;SKILL.md&lt;/code&gt; 版本。内容校验通过后直接发布，平台没有给 Skill 增加管理员审核。Skill 用来说明怎样工作，本身不能增加网络或工具权限。&lt;/p&gt;&lt;p&gt;Agent 绑定明确的 Skill 版本，新会话创建时保存配置快照。作者发布 v2，已经采用 v1 的会话仍然保留原版本，升级需要明确选择。&lt;/p&gt;&lt;p&gt;员工还可以创建个人 Agent，填写工作要求，选择组织已允许的工具和 Skill，也可以从组织模板复制。个人配置仅本人可见，复制后不会随着组织模板的后续修改自动变化。它使用部署提供的模型，不能携带个人模型凭据扩大权限。&lt;/p&gt;&lt;p&gt;这部分还补过一个隐私边界。审批人需要看到工具参数和结果，审批接口却不应该附带个人 Agent 的完整指令与 Skill 内容。最终数据库继续保留运行快照，HTTP 审批响应只返回工具请求信息。&lt;/p&gt;&lt;/section&gt;
-&lt;section&gt;&lt;h2&gt;我用什么证明它跑通了&lt;a href=&quot;#我用什么证明它跑通了&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;本批本地测试中，74 项单测通过，其中 11 项针对远程 MCP 传输与边界。它们之外还有 API、浏览器和运行时集成验证，测试范围分别记录。&lt;/p&gt;&lt;p&gt;完整链路使用真实 TLS 测试服务、PostgreSQL、Playwright 和固定 Codex 运行物。测试模型返回预设响应，推动个人 Agent 发起远程工具调用，等待审批，再经过 HTTPS 获得结果并生成报告文件。它能证明平台链路实际连接起来，不能单独证明真实模型的任务质量。&lt;/p&gt;&lt;p&gt;故障验证另外覆盖了连接过程中撤权、并发提交同一执行请求，以及远端收到请求后断开连接。对应观察结果是撤权后没有外部写入、并发不会重复派发、结果丢失后保留待核实状态。独立复核也检查了撤权竞争和审批接口的隐私返回。&lt;/p&gt;&lt;p&gt;更新本机试用时，先确认没有在途任务，再备份数据库和应用迁移。随后核对 21 张业务表原有字段的行数与摘要，确认原账号、历史记录和额度保持一致，文件卷也继续保留。这只能说明这次更新保留了已有数据，跨主机恢复还需要单独演练。&lt;/p&gt;&lt;/section&gt;
-&lt;section&gt;&lt;h2&gt;目前停在哪里&lt;a href=&quot;#目前停在哪里&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;现在可以继续验证的，是同事拿真实办公材料完成任务时的效果，以及某个具体第三方 MCP 的业务契约。公共 HTTPS 通用协议已用测试服务验证，真实企业服务仍需要逐个接入确认。&lt;/p&gt;&lt;p&gt;OAuth、内网 MCP、自签证书和任意 stdio 服务还没有开放。长期运行、容量、跨主机恢复和生产高可用也没有完成验收。后续如果出现跨进程人工等待、复杂分支或第二种运行时需求，再评估是否把 Agent 内部编排交给 LangGraph。&lt;/p&gt;&lt;p&gt;目前最值得继续观察的是同一条真实工作流程。员工上传材料，选择自己的 Agent，产生报告，遇到受控写入时完成审批，失败后又能明确知道哪些事情已经发生。这个过程跑顺了，才有依据决定下一步应该扩展哪一部分。&lt;/p&gt;&lt;p&gt;相关学习可以接着读 &lt;a href=&quot;/posts/how-to-build-an-agent/&quot;&gt;如何构建一个 Agent&lt;/a&gt; 和 &lt;a href=&quot;/posts/deepseek-harness-notes/&quot;&gt;DeepSeek Harness 学习笔记&lt;/a&gt;。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>单卡 RTX 5090 做 Qwen 回答蒸馏，为什么训练后还少答对了 3 题</title><link>https://luanluan1.github.io/posts/qwen-distillation-lora-gsm8k-experiment/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/qwen-distillation-lora-gsm8k-experiment/</guid><description>用 RTX 5090 完成 Qwen2.5-7B 到 0.5B 的回答蒸馏。474 道配对训练题、两组 LoRA 和 200 道固定测试，教师回答组得到 45% 正确率，高于原始解答组的 35%，却仍未超过原始学生。记录训练过程、评分修正，以及总分背后的逐题变化。</description><pubDate>Fri, 11 Sep 2026 01:00:00 GMT</pubDate><content:encoded>&lt;p&gt;两组 LoRA 都顺利训练完了，每组只用了两分钟左右。把 200 道测试题跑完，我得到的却是一个不太好写成“成功案例”的结果。&lt;/p&gt;
+&lt;/ul&gt;&lt;p&gt;用户反馈仍然有价值，但它更适合发现未知问题，不能代替带标准答案和标准证据的离线测试集。&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>Codex Enterprise Agent 项目全记录（七）验证、部署与项目复盘</title><link>https://luanluan1.github.io/posts/codex-enterprise-agent-delivery/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/codex-enterprise-agent-delivery/</guid><description>从单测、真实运行物和浏览器测试，到人工反馈、数据库备份及隔离恢复，说明项目怎样逐步交付，哪些结果有证据，哪些仍需继续验证。</description><pubDate>Mon, 26 Oct 2026 01:06:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-control-plane/&quot;&gt;系列总览与完整目录&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;一个 Agent 工作台很容易出现几种不同的成功。API 接单了，模型回答结束了，文件生成了，原测试通过了，外部写入也许完成了。它们需要各自的证据。一条“任务完成”消息无法解释全部环节。&lt;/p&gt;
+&lt;p&gt;项目的验证和交付因此按层推进。这里把前面各篇的实现放回实际开发过程，说明测试做到了哪里，哪些人工反馈改变了产品，以及部署更新怎样保留原数据。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;自动验证分几类证据&lt;a href=&quot;#自动验证分几类证据&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;验证方式&lt;/th&gt;&lt;th&gt;实际使用的组件&lt;/th&gt;&lt;th&gt;主要回答的问题&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;协议与单元测试&lt;/td&gt;&lt;td&gt;受控输入、假时钟和传输替身&lt;/td&gt;&lt;td&gt;超时、校验、状态转换和消息边界是否符合契约&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;API 与数据库测试&lt;/td&gt;&lt;td&gt;真实 HTTP 和隔离 PostgreSQL&lt;/td&gt;&lt;td&gt;权限、幂等、并发锁、版本和事务是否生效&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;容器与运行时测试&lt;/td&gt;&lt;td&gt;真实 Docker、固定 Codex、免费 provider&lt;/td&gt;&lt;td&gt;命令、停止、续聊、工具和文件是否真正执行&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;浏览器契约测试&lt;/td&gt;&lt;td&gt;真实页面资源，部分接口使用替身&lt;/td&gt;&lt;td&gt;控件、草稿、焦点、迟到响应和布局是否正确&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;浏览器集成测试&lt;/td&gt;&lt;td&gt;页面、真实 API、数据库和测试运行链路&lt;/td&gt;&lt;td&gt;用户操作能否走到实际记录与交付结果&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;真实模型样例&lt;/td&gt;&lt;td&gt;受控 DeepSeek 任务&lt;/td&gt;&lt;td&gt;特定真实提示词在当时是否完成工作&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;人工反馈&lt;/td&gt;&lt;td&gt;使用者实际操作与材料&lt;/td&gt;&lt;td&gt;真实效果、理解成本和体验是否符合需要&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;例如，模拟接口的 MCP 编辑测试可以证明修改端点后页面要求重填凭据，却不能独立证明 Token 加密存储。后者需要检查真实 API、数据库密文和错误返回。&lt;/p&gt;&lt;p&gt;免费 provider 会返回预设模型动作，让固定 Codex 实际运行命令或请求工具。这能重复触发故障，不产生供应商费用；模型该不该提问、能否理解复杂材料，则留给真实模型和人工场景。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;最新一批检查具体覆盖了什么&lt;a href=&quot;#最新一批检查具体覆盖了什么&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;截至 2026 年 10 月 26 日，能力中心批次的本地单测为 74 项，其中 11 项涉及远程 MCP 传输。这个数字不包含全部浏览器和集成探针，也不能与历史各批测试数相加当成独立用例总量。&lt;/p&gt;&lt;p&gt;远程完整链路使用真实 TLS、数据库、浏览器和固定 Codex 运行物。个人 Agent 发起工具请求，管理员批准，平台调用 HTTPS 服务，结果回到原任务并交付报告。&lt;/p&gt;&lt;p&gt;另一条链路让服务在收到调用后断开连接，检查工具和任务进入待核实，清理扫描不会再创建第二个 Run。连接中撤权则直接检查外部写入为零。这里观察的是动作和数据，页面文案只是附加结果。&lt;/p&gt;&lt;p&gt;该批 PR 的九组 CI 作业包括仓库检查、运行时、工作台页面、OIDC、文件交付、配额、治理、对话及会话文件。九组作业通过后合并到 main，仍不将待反馈的人工作为已通过填写。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;几个真正影响实现的缺陷&lt;a href=&quot;#几个真正影响实现的缺陷&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;发现的问题&lt;/th&gt;&lt;th&gt;为什么会发生&lt;/th&gt;&lt;th&gt;修复与验证&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;关闭审批后抛错，旧审批又出现&lt;/td&gt;&lt;td&gt;状态更新随事务错误一起回滚&lt;/td&gt;&lt;td&gt;先提交关闭与拒绝审计，再返回拒绝，验证同键重试&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;等待数据库锁后仍按旧时间批准&lt;/td&gt;&lt;td&gt;请求进入时有效，拿到锁时已过期&lt;/td&gt;&lt;td&gt;锁后读数据库时钟，用真实锁等待验证&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;成员快速恢复后旧任务可能继续&lt;/td&gt;&lt;td&gt;单次轮询看不到中间撤权&lt;/td&gt;&lt;td&gt;撤权事务保存停止意图，恢复不清除&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;杀掉宿主连接，任务仍在写文件&lt;/td&gt;&lt;td&gt;attach 进程与容器子进程不是同一生命周期&lt;/td&gt;&lt;td&gt;停整个容器，观察 PID 和文件增长&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Excel 字面编号被当成转义串&lt;/td&gt;&lt;td&gt;表格格式对特定字符串有特殊解释&lt;/td&gt;&lt;td&gt;保存后读回单元格与表名，验证字面值&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;旧组织的预览响应迟到&lt;/td&gt;&lt;td&gt;页面切换早于网络请求返回&lt;/td&gt;&lt;td&gt;身份、组织和请求代次核对，清空过期内容&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;这些问题分别出现在数据库、运行环境和格式交付上。给前端多加一个 loading，无法替代对应层的修复。&lt;/p&gt;&lt;p&gt;独立审查与自行运行测试也分别记录。只读审查可以指出一条错误路径，实际探针才证明本次执行的结果；局部独立复核不扩写成全系统安全认证。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;人工测试改了哪些产品细节&lt;a href=&quot;#人工测试改了哪些产品细节&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;前批外部测试保留过五项问题或建议。七种文件上传后没有显示实际大小；错误附件移除后旧错误仍残留；首次登录回调偶发失败；测试报告的汇总口径把部分通过误写成全部失败；历史详情区需要独立滚动。&lt;/p&gt;&lt;p&gt;其中附件反馈和滚动问题复用原有状态与 CSS 修复。报告问题需要以新生成结果复测，不能直接修改旧验收产物掩盖历史。登录偶发问题则需要服务端时间线，单凭截图不足以判断根因。&lt;/p&gt;&lt;p&gt;后续还有输入框过大、成员权限选项难理解和添加候选重复等反馈。对应改动分别收紧 composer、把权限转为业务访问级别，以及在数据库过滤候选后分页。自动化回归保留这些行为，人工再集中关注新功能和真实任务质量。&lt;/p&gt;&lt;p&gt;这样安排减少了朋友反复执行同一批清单的成本，但没有取消人的验收。尚未操作的项目继续标记待反馈，不能用自动测试结果替他补上通过。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;本机部署由哪些部分组成&lt;a href=&quot;#本机部署由哪些部分组成&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;平台使用本机持久化 PostgreSQL，身份服务使用独立 Keycloak 数据卷。Runner 创建任务容器，持续对话保留工作卷和 Codex 会话卷；回收执行容器不删除身份或对话文件。&lt;/p&gt;&lt;p&gt;宿主 Node 和运行镜像固定版本。Windows 守护入口负责当前用户登录后的启动和有限故障恢复，仍依赖 Docker 与用户环境。它没有成为无登录服务器服务，也没有跨节点高可用。&lt;/p&gt;&lt;p&gt;需要外部测试时，应用和身份服务的公开 origin、issuer、回调和 Cookie 策略必须一致。TCP 穿透只负责转发连接，不会自动解决证书或登录回调。相关 HTTPS 和身份契约用隔离实例验证，公网是否可用仍取决于电脑、Docker 和穿透服务状态。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;更新为什么先检查任务和备份&lt;a href=&quot;#更新为什么先检查任务和备份&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;当前本机进程依赖检出的代码目录。部署更新先检查在途任务，停止接单和相关服务，再保存数据库及必要私有状态，应用迁移，重启并检查页面。不能为了修复服务启动，重新初始化账号或重置额度。&lt;/p&gt;&lt;p&gt;能力中心迁移前保存数据库备份，更新后比较了 21 张业务表原有字段的行数与摘要，检查已有账号、历史与用量保留，原文件卷继续存在。这里证明的是这次本机更新的数据一致性。&lt;/p&gt;&lt;p&gt;完整恢复另有独立实验。冷备包含业务数据库、身份数据、工作卷与会话卷，归档校验路径、摘要及资源映射；恢复到新数据库和新资源，避免演练与原实例共享工作卷。恢复本身不启动付费任务。&lt;/p&gt;&lt;p&gt;验证继续使用真实 Codex 恢复原线程并修改原文件，再检查原实例文件和额度不变。损坏归档、缺卷和映射不匹配需要拒绝。这与“数据库备份命令返回成功”是不同范围的证据。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;稳定性改进与仍未查清的部分&lt;a href=&quot;#稳定性改进与仍未查清的部分&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;守护程序曾把相隔数小时的故障累计进同一重启预算，导致后续恢复停止。后来改为连续健康一段时间后补充预算，短暂成功不清零，待机后的探测给予有上限的恢复窗口。&lt;/p&gt;&lt;p&gt;诊断又把当前健康检查与最后历史事件分开，避免服务已经恢复，界面仍因旧事件显示异常。测试使用可控制时钟，再结合真实 HTTP、进程和隔离数据库验证。&lt;/p&gt;&lt;p&gt;此前底层进程异常退出仍没有完整定位。守护能够拉起服务，只证明恢复路径起作用，不能据此宣称掉线根因已经解决。长期待机、负载和第二台机器验证仍继续保留。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;后续工作的顺序&lt;a href=&quot;#后续工作的顺序&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;第一步是用真实办公材料验证输入到交付，记录材料特征、预期结果和错误，而非继续扩大通用页面数量。第二步选择一家具体 MCP，核对它的认证、Schema 和业务幂等能力。模型效果与外部写入都需要真实场景约束。&lt;/p&gt;&lt;p&gt;跨主机恢复和长期运行应形成独立验收，覆盖账号、证书、域名及凭据迁移。只有出现明确的多节点需求，再考虑队列服务、共享凭据设施和发布回滚机制。&lt;/p&gt;&lt;p&gt;框架引入也遵循相同顺序。需要复杂分支或可持久化等待，再评估 LangGraph 的内部编排；需要第二种运行时，再扩展 Adapter 契约。企业业务状态、授权和文件归属已有明确位置，可以围绕真实需求逐步替换。&lt;/p&gt;&lt;p&gt;这组记录对应的成果，是一条可以实际操作和验证的企业 Agent 工作流程，以及能够解释失败与权限变化的工程实现。它为后续试用提供了基础，生产可靠性和业务效果仍需要后续证据。&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-capabilities/&quot;&gt;上一篇 · 能力中心&lt;/a&gt; · &lt;a href=&quot;/posts/codex-enterprise-agent-control-plane/&quot;&gt;返回系列总览&lt;/a&gt;&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>Codex Enterprise Agent 项目全记录（六）Skill、MCP 与个人 Agent</title><link>https://luanluan1.github.io/posts/codex-enterprise-agent-capabilities/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/codex-enterprise-agent-capabilities/</guid><description>内部工作说明怎样发布为不可变 Skill 版本，管理员怎样发现和分发 HTTPS MCP，员工又怎样组合个人 Agent，以及远程调用结果丢失后的处理。</description><pubDate>Mon, 26 Oct 2026 01:05:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-control-plane/&quot;&gt;系列总览与完整目录&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;工作台和任务链路稳定到可以继续扩展以后，需求转向能力复用。员工希望保存常用报告规则，管理员希望添加工具，再把允许范围分发给组织；员工也需要组合自己的助手。&lt;/p&gt;
+&lt;p&gt;当前能力中心由内部 Skill 目录、MCP 管理、组织 Agent 模板和个人 Agent 构成。它们复用原来的任务、审批和文件交付，没有另建运行时。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;几种能力分别保存什么&lt;a href=&quot;#几种能力分别保存什么&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;对象&lt;/th&gt;&lt;th&gt;保存的内容&lt;/th&gt;&lt;th&gt;当前使用方式&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;Skill&lt;/td&gt;&lt;td&gt;工作说明、元数据、版本与哈希&lt;/td&gt;&lt;td&gt;作为有明确版本的上下文参考&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;MCP 服务&lt;/td&gt;&lt;td&gt;端点、认证方式、发现结果与分发状态&lt;/td&gt;&lt;td&gt;提供可由 Agent 请求调用的工具&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;组织 Agent&lt;/td&gt;&lt;td&gt;工作要求、任务类型、工具与 Skill 选择&lt;/td&gt;&lt;td&gt;管理员维护，可直接选用或复制&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;个人 Agent&lt;/td&gt;&lt;td&gt;本人的工作要求及允许范围内的组合&lt;/td&gt;&lt;td&gt;仅本人查看和修改，新会话固定配置&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;连接凭据&lt;/td&gt;&lt;td&gt;控制面使用的服务认证数据&lt;/td&gt;&lt;td&gt;不交给模型，不作为 Skill 内容&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;当前没有公开市场、社区评分、任意 Git 安装或独立连接器管理平台。界面里的“内部市场”需求，先落实为可浏览、上传、下载和使用的企业内目录。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Skill 发布后怎样进入任务&lt;a href=&quot;#skill-发布后怎样进入任务&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;可执行成员上传单个 UTF-8 &lt;code&gt;SKILL.md&lt;/code&gt;，填写标识、名称和变更说明。服务检查编码、大小、组织归属和内容哈希，通过后直接发布。用户明确要求 Skill 不走管理员审核，这项产品规则在实现中保留。&lt;/p&gt;&lt;p&gt;作者追加 v2 时生成新记录，不能覆盖 v1。同组织成员可以浏览和下载，跨组织不能读取；仅查看成员能够浏览下载，但不能发布或运行。下载到外部的副本已经脱离平台控制，停用目录不能收回它。&lt;/p&gt;&lt;p&gt;Agent 或新对话选择明确版本。任务保存版本和内容快照，Runner 在加载前检查编码与哈希，把 Skill 作为不可信工作参考加入输入；Agent 的工作要求则沿现有配置通道传入。&lt;/p&gt;&lt;p&gt;这一区分影响权限。Skill 说“请调用写入工具”，不能为任务增加工具、网络或凭据。是否可调用仍由组织分发、Agent 绑定、成员资格和实际运行规则决定。&lt;/p&gt;&lt;p&gt;单个 Skill 最多 256 KiB，组合最多 5 个且合计受限。普通停用阻止新任务及已有会话的下一轮，已经进入当前模型上下文的文字不能直接收回。当前没有额外实现 Skill 紧急撤权产品流程。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;MCP 从内置服务走向通用 HTTPS&lt;a href=&quot;#mcp-从内置服务走向通用-https&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;第一版登记的是部署内置的本地测试记录 MCP，用真实初始化、发现和调用先验证标准契约。后续扩展为多个公共 HTTPS Streamable HTTP 服务，认证支持无认证或 Bearer。&lt;/p&gt;&lt;p&gt;管理员登记服务以后，先测试连接并发现工具，再明确勾选和保存组织分发。发现结果并不等于授权。成员不能自行填写任意服务端点或启动命令，只能在已分发工具中选择。&lt;/p&gt;&lt;p&gt;不同服务可能提供同名工具。平台按服务身份与远程名称生成内部工具 ID，再保留远程原名用于实际调用，避免跨服务误用权限。&lt;/p&gt;&lt;p&gt;工具参数依据发现的 JSON Schema 校验，并限制大小、深度和引用范围。当前支持有界对象及无环本地引用，不支持任意复杂 Schema 或必须使用 MCP tasks 的工具。拒绝不兼容契约时，不能假装已经发现成功。&lt;/p&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;管理员登记&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;连接测试与发现&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;显式分发组织工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;成员组合个人 Agent&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务冻结工具定义&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;调用参数校验与审批&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;派发前实时授权复核&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;执行结果或待核实&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;管理员登记&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;连接测试与发现&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;显式分发组织工具&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;成员组合个人 Agent&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;任务冻结工具定义&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;调用参数校验与审批&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;派发前实时授权复核&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;执行结果或待核实&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;连接测试为什么也需要边界&lt;a href=&quot;#连接测试为什么也需要边界&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;管理员能够输入 HTTPS 地址，并不意味着控制面应该对任意内部目标发请求。连接先检查协议与域名，再核对 DNS 返回的全部候选地址，拒绝回环、内网和保留地址。&lt;/p&gt;&lt;p&gt;实际连接固定到已经检查的地址，继续验证 TLS，并拒绝重定向。这样避免只校验一次域名文本，随后实际请求却去了另一个目标。响应体积、发现页数和总时限也受到限制。&lt;/p&gt;&lt;p&gt;当前每组织最多登记 20 个 MCP 服务，每服务最多发现 32 个工具、8 页结果。连接或发现清单变化会撤销分发，要求重新授权；连接测试在网络等待期间不占用全局治理锁，完成后再核对版本，防止迟到结果覆盖管理员刚做的停用。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Bearer 怎样保存和更新&lt;a href=&quot;#bearer-怎样保存和更新&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;凭据由实例私有目录中的密钥进行 AES-GCM 加密，密文绑定组织与服务。浏览器保存后只显示是否配置，审计、任务快照和容器都不包含真实 Token。&lt;/p&gt;&lt;p&gt;同一端点编辑时，可以明确保留已有凭据；更换端点必须重新输入，不能把原 Token 静默发到新服务。备份需要同时保留数据库和实例私有密钥，只保存密文不足以恢复连接。&lt;/p&gt;&lt;p&gt;远程返回值还可能反射凭据。传输测试包含服务把 Token 放回元数据或结果的情况，平台拒绝或脱敏处理，错误只返回受控分类。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;远程调用如何避免自动重放&lt;a href=&quot;#远程调用如何避免自动重放&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;当前所有第三方工具都进入人工审批，不采信服务的只读注解来直接豁免。批准以后，执行入口先持久化一次 &lt;code&gt;executing&lt;/code&gt; 占用，再在真正派发前检查成员、Agent、工具、期限和运行状态。&lt;/p&gt;&lt;p&gt;网络调用放在数据库事务之外。期间撤权可能先发生，因此连接建立之后、工具请求发出之前还有一次即时复核。授权检查本身超过期限，也不能在稍后恢复时迟到派发。&lt;/p&gt;&lt;p&gt;远端收到请求后断开连接，平台不能判断它是否已经写入。此时工具和所属任务进入 &lt;code&gt;outcome_unknown&lt;/code&gt;，保留待核实事实，不自动重试，也不创建另一个 Run 来重放。&lt;/p&gt;&lt;p&gt;如果进程在占用后、结果保存前消失，执行期限到达后同样按未知处理。重复执行只返回已有状态。它防止平台自动重复派发，严格的外部业务单次写入仍需要对方的幂等或事务支持。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;个人 Agent 复用已有配置模型&lt;a href=&quot;#个人-agent-复用已有配置模型&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;个人 Agent 在已有配置上增加归属与模板来源。组织模板没有个人 owner，个人配置绑定成员；复制保存来源模板和版本，后续模板变化不会覆盖个人编辑。&lt;/p&gt;&lt;p&gt;保存使用版本校验和幂等键，冲突保留草稿。启用时核对所选能力仍可用，工具撤权继续影响实际执行。每人每组织最多 20 个个人 Agent，停用项也计入上限；它沿用部署提供的模型，没有个人密钥或任意模型切换。&lt;/p&gt;&lt;p&gt;隐私检查还补过一处返回边界。审批人需要查看具体工具参数和结果，不能因此从审批接口拿到个人 Agent 的完整工作要求和 Skill 内容。数据库继续保留内部快照，HTTP 返回只展示请求所需信息。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;完整链路怎样验证&lt;a href=&quot;#完整链路怎样验证&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;集成验证使用真实 TLS 测试服务、PostgreSQL 和浏览器，管理员完成登记与分发，成员组合个人 Agent，再由固定 Codex 发起动态工具请求。免费 provider 触发审批与实际 HTTPS 调用，最后生成报告产物。&lt;/p&gt;&lt;p&gt;故障测试包含并发仅派发一次、连接过程中撤权零写入、结果丢失不重放，以及他人和跨组织无法读取个人配置。真实企业 MCP 尚未指定，因此通用协议验证不能扩大为任意供应商兼容。&lt;/p&gt;&lt;p&gt;OAuth、内网端点、自签证书和任意 stdio 命令仍不开放。先把这些边界写明，才能判断下一家具体服务需要补的是认证、网络还是工具契约。&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-files/&quot;&gt;上一篇 · 对话与文件&lt;/a&gt; · &lt;a href=&quot;/posts/codex-enterprise-agent-delivery/&quot;&gt;下一篇 · 验证与交付&lt;/a&gt;&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>Codex Enterprise Agent 项目全记录（五）持续对话与办公文件交付</title><link>https://luanluan1.github.io/posts/codex-enterprise-agent-files/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/codex-enterprise-agent-files/</guid><description>一次对话如何保存原生上下文和工作文件，附件如何按轮隔离，办公材料怎样提取，报告、差异和 Excel 又怎样成为可信的交付记录。</description><pubDate>Mon, 26 Oct 2026 01:04:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-control-plane/&quot;&gt;系列总览与完整目录&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;一次任务能够生成报告以后，用户接着会要求修改。第二轮拿到修订材料，还需要继续使用第一轮的文件，不能重新开始一切；查看旧结果时，又不能把当前文件冒充旧版。&lt;/p&gt;
+&lt;p&gt;持续对话因此同时牵涉运行时上下文、工作文件和每轮交付记录。页面上的聊天气泡只是其中一部分。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;每轮任务独立，工作区持续保留&lt;a href=&quot;#每轮任务独立工作区持续保留&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;对话记录关联多轮 Task，每轮保存自己的输入、用量、审批、事件和产物。对话另有持续工作卷和 Codex 会话卷，容器则按轮创建和结束。&lt;/p&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;一段 Conversation&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;第 1 轮 Task&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;第 2 轮 Task&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;原输入与第 1 版交付&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;追加输入与第 2 版交付&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;持续工作卷与 Codex 会话卷&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;原生 thread resume&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;一段 Conversation&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;第 1 轮 Task&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;第 2 轮 Task&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;原输入与第 1 版交付&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;追加输入与第 2 版交付&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;持续工作卷与 Codex 会话卷&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;原生 thread resume&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;p&gt;下一轮必须等上一轮成功且资源状态允许恢复。数据库限制同一工作区不能同时有两个活跃执行；旧容器确认停止并移除以后，新容器才复用持续卷。&lt;/p&gt;&lt;p&gt;恢复使用 Codex 原生线程，模型能继续查看原来的工作文件。平台没有仅靠把旧报告重新拼进提示词来假装恢复。已登记产物则按轮保留，持续工作区中的修改不会覆盖数据库保存的第一版交付。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;运行中补充与下一轮是不同操作&lt;a href=&quot;#运行中补充与下一轮是不同操作&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;任务尚在运行时，用户可以追加文字，通过 &lt;code&gt;turn/steer&lt;/code&gt; 送入当前原生轮次。当前阶段不接收运行中的新附件，也不重新开始本轮计时。&lt;/p&gt;&lt;p&gt;补充内容先持久化，再由 Runner 领取和投递。运行时确认接收以后，页面才能显示相应状态；接收仍不能证明最终结果已经落实。&lt;/p&gt;&lt;p&gt;固定版本 Codex 的消息关联标识没有替平台完成去重，重复投递仍可能被接收。因此平台保存幂等请求，并在无法确认投递结果时停止自动重发。一次“补充要求”也可能影响文件操作，不能因为它是聊天文字就忽略重复风险。&lt;/p&gt;&lt;p&gt;澄清问题复用动态工具。Agent 在当前任务提出一个关键问题，通常给 2 至 3 个选项，可允许有限自定义回答。答案作为工具结果回到同一轮，保留当前附件和工作区。&lt;/p&gt;&lt;p&gt;等待问题时，普通补充暂停，用户仍可停止。等待占用执行槽并计入当前总时限，没有实现跨天挂起、多问题分支或任意断点恢复。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;附件从原件到模型输入&lt;a href=&quot;#附件从原件到模型输入&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;每轮接受一个上传文件。首轮文本输入放入初始工作区，后续附件按轮进入独立目录，例如 &lt;code&gt;attachments/turn-N/&lt;/code&gt;，避免两轮同名文件互相覆盖。&lt;/p&gt;&lt;p&gt;上传归属、消息与轮次在事务中校验，重复提交不能多建一轮。原件按原始字节保存，模型工作输入则是校验后的文本或提取结果。下载原件与查看提取内容各有用途。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;输入&lt;/th&gt;&lt;th&gt;当前处理&lt;/th&gt;&lt;th&gt;必须说明的限制&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;TXT、MD、CSV&lt;/td&gt;&lt;td&gt;校验编码和大小，导入文本工作区&lt;/td&gt;&lt;td&gt;不是任意编码或无限文本输入&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;ZIP&lt;/td&gt;&lt;td&gt;校验条目和展开内容，导入允许的文本或源码&lt;/td&gt;&lt;td&gt;拒绝路径穿越、链接和解压膨胀等越界内容&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;XLSX&lt;/td&gt;&lt;td&gt;提取有界表格数据，保留多表及单元格位置&lt;/td&gt;&lt;td&gt;使用可读取的缓存值，不重新计算公式&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;DOCX&lt;/td&gt;&lt;td&gt;提取段落和表格文字&lt;/td&gt;&lt;td&gt;不承诺图片、复杂排版和版式保真&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;PDF&lt;/td&gt;&lt;td&gt;按页提取文字并记录读取情况&lt;/td&gt;&lt;td&gt;扫描页无 OCR，无文字材料不能冒充完整读取&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;文档提取复用原有上传、权限和历史保存，在隔离容器中完成有界转换。它没有给任务开放一个任意运行 Office 二进制的能力，也没有增加第二套文档管理系统。&lt;/p&gt;&lt;p&gt;当前上传上限为 2 MiB，单个文本文件最多 512 KiB；对话累计展开输入最多 4 MiB、128 个文件。达到限制应给出原因，并保留尚未发送的文字。格式校验通过，也不代表模型一定正确理解了业务含义。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;产物由交付层登记&lt;a href=&quot;#产物由交付层登记&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;模型回复里提到一个路径，不足以证明文件实际存在。任务停止后，可信交付程序采集符合范围的文件，记录大小、摘要与归属，再作为可下载产物登记。&lt;/p&gt;&lt;p&gt;采集拒绝不允许的符号链接、目录和超限内容。代码任务还要核对原始测试基线，不能靠修改测试文件来获得虚假的通过结果。失败任务可以保留可用中间文件，但状态不能因此被改成成功。&lt;/p&gt;&lt;p&gt;Artifact 在这里指已登记的交付物。工作区里可能还有未交付的临时文件，二者不是同一个集合。用于文件比较的快照和用于运行时恢复的会话数据也有不同用途。&lt;/p&gt;&lt;p&gt;文件链接绑定消息所属 Task，再精确匹配已登记的唯一产物。点击历史回复里的 &lt;code&gt;report.md&lt;/code&gt;，应打开那一轮的文件，不能按名称从最新工作区随便找一个替代。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;文件差异为何需要完整性标记&lt;a href=&quot;#文件差异为何需要完整性标记&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;平台在执行边界之外保存允许范围内的文件快照，比较实际内容，展示新增、修改、删除或未变化。前端把补丁作为纯文本显示，缺少完整快照时明确指出无法完整比较。&lt;/p&gt;&lt;p&gt;失败任务只采集到部分文件时，不能因为某个文件没有出现在结果里，就断言它被删除。文件目录完整性决定比较能够回答哪些问题。&lt;/p&gt;&lt;p&gt;Markdown 报告提供阅读和原文两种方式，复杂内容可以回退原文。代码、CSV 和差异仍保持字面内容；受限 Markdown 不执行 HTML、脚本或任意图片加载。&lt;/p&gt;&lt;p&gt;预览和下载请求由后端重新校验权限，放大和复制使用已经加载的内容。用户切换组织或退出后，旧预览要清空，迟到响应不能把先前的私有内容重新放回页面。平台无法收回已经复制到外部的文字。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Excel 输出采用受限数据定义&lt;a href=&quot;#excel-输出采用受限数据定义&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;能够读取 Excel 以后，同事还会希望得到可继续加工的表格。当前输出没有引入完整 Office 编辑环境，模型先写固定格式的数据定义，可信交付层再生成新的 &lt;code&gt;report.xlsx&lt;/code&gt;。&lt;/p&gt;&lt;p&gt;生成器使用有时间、大小和内存上限的固定 Node 子进程。只接受基本单元格类型，日期和长编号用文本，不执行任意模型脚本。这个宿主子进程本身不是隔离沙箱，保护依赖受限输入和固定生成逻辑。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;输出约束&lt;/th&gt;&lt;th&gt;当前上限或规则&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;工作表&lt;/td&gt;&lt;td&gt;最多 8 张&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;表维度&lt;/td&gt;&lt;td&gt;每表最多 5000 行、64 列，总计 20000 格&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;数据定义与成品&lt;/td&gt;&lt;td&gt;定义最多 512 KiB，成品最多 1 MiB&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;内容&lt;/td&gt;&lt;td&gt;基本类型，不支持公式重算、宏或原版式编辑&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;测试会保存后重新读取真实单元格值。独立审查曾发现类似 &lt;code&gt;_x0041_&lt;/code&gt; 的文字被表格库当成转义串，修复后检查字面编号和完整表名能够正确读回，文件头检查无法发现这种内容变化。&lt;/p&gt;&lt;p&gt;端到端验证使用合成材料，第一轮计算出 30，第二轮修改后得到 35，并检查第一轮和原件字节继续保留。这证明了生成与历史链路，不能替代真实财务口径核对。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;页面状态也属于交付的一部分&lt;a href=&quot;#页面状态也属于交付的一部分&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;未发送草稿按当前页面内的组织与会话保存，切换对话可以保留，退出、切组织和浏览器重载等边界会清除。它没有持久写入浏览器存储，页面也应在可能丢失未发送内容时提醒。&lt;/p&gt;&lt;p&gt;轮询状态时，页面尽量只更新变化部分，保留文件控件、选中文字和键盘焦点。主状态关注当前轮，文件面板可以浏览旧轮，二者不能相互覆盖。&lt;/p&gt;&lt;p&gt;人工反馈还推动了附件大小显示、旧错误清理和历史详情滚动修复。员工需要据此判断上传是否成功、看到的是哪一轮，以及下一步还能做什么。&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-governance/&quot;&gt;上一篇 · 身份与治理&lt;/a&gt; · &lt;a href=&quot;/posts/codex-enterprise-agent-capabilities/&quot;&gt;下一篇 · 能力中心&lt;/a&gt;&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>Codex Enterprise Agent 项目全记录（四）身份、审批与模型请求额度</title><link>https://luanluan1.github.io/posts/codex-enterprise-agent-governance/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/codex-enterprise-agent-governance/</guid><description>从真实 OIDC 登录进入组织授权，再展开成员撤权、工具审批、版本并发和三层模型请求配额，说明治理规则如何落实到运行中的任务。</description><pubDate>Mon, 26 Oct 2026 01:03:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-control-plane/&quot;&gt;系列总览与完整目录&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;一个员工已经登录，仍然可能没有当前组织的任务资格。管理员能够维护成员和额度，也不意味着可以打开所有员工的工作文件。项目从演示身份转向真实账号以后，把身份认证、组织授权与对象归属分别保存和检查。&lt;/p&gt;
+&lt;p&gt;这篇说明三类实际规则怎样落到执行路径上。它们涉及登录请求、后台 Runner 和模型出口，单独限制页面按钮还不够。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;登录过程把什么交给身份服务&lt;a href=&quot;#登录过程把什么交给身份服务&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;账号与密码由 Keycloak 管理。平台发起 OIDC 登录时生成一次性 state、nonce 和 PKCE 数据，回调时验证授权码与浏览器绑定，按 issuer 和 subject 确定平台用户。&lt;/p&gt;&lt;p&gt;密码提交给身份服务，平台业务库保存组织资格、任务和产物。浏览器使用随机 HttpOnly Cookie，数据库保存会话摘要；写入请求另做 Origin 与 CSRF 检查。&lt;/p&gt;&lt;p&gt;登录成功以后，业务 API 仍逐次确认有效用户、组织成员资格及任务归属。修改 URL 中的任务 ID，或者直接请求文件下载地址，都要经过相同的对象授权，不能只靠前端列表隐藏别人的任务。&lt;/p&gt;&lt;p&gt;浏览器也处理身份变化。同一浏览器的另一标签页换账号以后，当前页面不能继续使用旧身份的缓存文件。迟到响应返回时，要再次核对它属于哪个身份和组织，才能更新画面。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;成员权限为什么没有只用一个布尔值&lt;a href=&quot;#成员权限为什么没有只用一个布尔值&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;权限或状态&lt;/th&gt;&lt;th&gt;当前含义&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;可执行任务&lt;/td&gt;&lt;td&gt;可以在所属组织提交和运行，仍受工具及额度约束&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;仅可查看&lt;/td&gt;&lt;td&gt;可以阅读本人历史和已交付文件，不能提交新任务&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;禁止访问&lt;/td&gt;&lt;td&gt;保留成员记录，但阻止当前组织的执行和读取&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;移出组织&lt;/td&gt;&lt;td&gt;从当前成员列表退出，历史外键与用量记录继续保留&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;平台管理员&lt;/td&gt;&lt;td&gt;可以执行相应管理操作，不自动获得组织执行资格或他人文件权限&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;页面最初使用“角色”和“资格”两个字段，人工试用时不容易理解。后来改成三种业务访问级别，后端仍映射到原有授权字段。移出又作为独立动作，避免与保留名单中的禁用混淆。&lt;/p&gt;&lt;p&gt;重新加入复用原成员身份和额度桶，不通过创建新记录清零历史。添加候选在数据库按组织过滤后再分页；过期页面和并发添加仍由写接口拒绝重复。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;撤权要影响已经排队或运行的任务&lt;a href=&quot;#撤权要影响已经排队或运行的任务&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;如果只修改成员有效状态，用户很快恢复权限，Runner 的轮询可能看不到中间发生过撤权。因此成员变更事务同时保存停止意图，并取消排队任务。恢复资格不会删除已经写下的停止请求。&lt;/p&gt;&lt;p&gt;运行中的任务由监管路径确认容器停止以后再收尾。旧请求即使碰到恢复后的新成员状态，也不能沿原路径继续。已发送到供应商的模型请求、已经发生的外部写入不能被本地撤权撤回。&lt;/p&gt;&lt;p&gt;成员变更、停止意图和审计在同一事务里提交。测试会制造审计写入失败，检查前面的资格变化是否一起回滚，避免出现权限已经改动却没有审计事实。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;审批批准的对象到底是什么&lt;a href=&quot;#审批批准的对象到底是什么&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;模型提出的是一个工具意图。平台先验证工具和参数，保存具体请求、所属成员、Agent、任务与运行，再决定是否进入等待审批。&lt;/p&gt;&lt;p&gt;当前内置记录写入需要审批；远程 MCP 的所有第三方工具也统一要求审批。请求创建后五分钟失效，批准不延长有效期。对话内调用还受本轮任务剩余期限约束，不能据此无限挂起。&lt;/p&gt;&lt;p&gt;手动试用和对话调用执行方式不同。成员手动请求获批后，需要本人明确执行；对话请求由等待中的运行层继续。这能避免一个审批结果同时被两套入口重复当成执行指令。&lt;/p&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;提出工具与参数&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验权限和输入&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待审批&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已批准待执行&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;复核期限、授权版本和运行&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;执行并保存结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;拒绝或过期&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;提出工具与参数&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;校验权限和输入&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;等待审批&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;已批准待执行&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;复核期限、授权版本和运行&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;执行并保存结果&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;&lt;div&gt;&lt;span&gt;&lt;p&gt;拒绝或过期&lt;/p&gt;&lt;/span&gt;&lt;/div&gt;
+&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;p&gt;批准的是这一份具体参数，审批人不能顺手编辑成另一条命令。执行前还会核对成员、Agent 和工具授权版本。停用后再启用会改变版本，旧批准不会恢复有效。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;版本校验和幂等键各管一件事&lt;a href=&quot;#版本校验和幂等键各管一件事&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;两位管理员可能同时打开同一配置。版本校验拒绝过期草稿覆盖新状态，前端保留尚未提交的修改，要求明确重载最新配置。&lt;/p&gt;&lt;p&gt;网络断开后的重复提交则由幂等键处理。同键同内容复用结果，同键换内容拒绝，不能因为重试重复生成审计或执行。版本校验解决并发覆盖，幂等解决重复投递，两者都不能替代权限检查。&lt;/p&gt;&lt;p&gt;持有数据库锁也不能省略时间复核。请求开始时有效，等到取得任务锁可能已经过期，所以执行和审批在锁后再次读取数据库时钟。&lt;/p&gt;&lt;p&gt;本地测试记录可以把写入和成功状态放进一个事务。远程业务调用跨出数据库边界，结果丢失要按未知处理，具体机制留在能力中心篇展开。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;三层配额如何限制一次模型请求&lt;a href=&quot;#三层配额如何限制一次模型请求&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;平台计量的是累计模型请求次数。一次 Agent 任务可能经过多轮模型与工具交互，不能用任务数量代替模型调用次数。&lt;/p&gt;&lt;p&gt;实际可用量由平台、组织、成员剩余量的最小值决定。为便于说明，假设三层还分别剩 100、30 和 8 次，这位成员最多还能请求 8 次。这是规则示例，不是当前实例的真实用量。&lt;/p&gt;&lt;p&gt;每次真实 provider 调用之前，模型出口根据可信任务归属执行预占。一个数据库事务同时检查三层，全部允许才一起增加计数；任一层不足，三层都不扣，也不触达供应商。&lt;/p&gt;&lt;p&gt;唯一请求流水防止同次请求重复计数。模型请求已经预占，后续失败或取消不会自动退款；停止本地等待不能证明供应商没有接收和计费。usage 无法确认时保留未知，不将它写成零。&lt;/p&gt;&lt;p&gt;管理员修改累计上限，已用次数不清零。新上限不得低于已用；设为恰好等于已用可以阻止后续请求。增加额度也不会自动复活已经失败的任务。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;验证落在实际动作上&lt;a href=&quot;#验证落在实际动作上&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;治理回归覆盖真实 Keycloak 登录、PostgreSQL 并发、两种浏览器身份，以及固定 Codex 容器。成员撤权测试检查持续写文件的容器被停止，审批测试检查批准前没有记录，额度测试检查超额请求没有进入 provider。&lt;/p&gt;&lt;p&gt;并发测试还验证最后一个模型请求名额只被一个执行者取得。跨组织、只读、退出后 Cookie 重放与旧审批重试分别有拒绝路径，不能把“页面不显示按钮”当作后端拒绝证据。&lt;/p&gt;&lt;p&gt;当前仍是本机治理实现。它没有连接企业员工目录，也没有实现金额计费、周期账单或组织管理员委派。规则可以说明清楚，生产规模下的性能和运维仍需另外验证。&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-execution/&quot;&gt;上一篇 · 模型与容器&lt;/a&gt; · &lt;a href=&quot;/posts/codex-enterprise-agent-files/&quot;&gt;下一篇 · 对话与文件&lt;/a&gt;&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>Codex Enterprise Agent 项目全记录（三）模型出口与容器执行</title><link>https://luanluan1.github.io/posts/codex-enterprise-agent-execution/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/codex-enterprise-agent-execution/</guid><description>固定 Codex 运行版本，在无外网容器中接入 DeepSeek，分离模型密钥与任务命令，并用实际进程和文件变化验证取消与清理。</description><pubDate>Mon, 26 Oct 2026 01:02:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-control-plane/&quot;&gt;系列总览与完整目录&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;让模型执行代码之前，需要先确定执行者能接触哪些东西。这个项目把可信管理程序放在宿主，把 Codex 和任务命令放入 Docker。任务能修改自己的工作区，控制面数据库、Docker 管理接口和模型供应商密钥留在外面。&lt;/p&gt;
+&lt;p&gt;这层负责的是执行环境和模型出口。业务任务的领取与恢复在上一篇讲过，成员和工具审批则在下一篇展开。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;为什么先固定运行包&lt;a href=&quot;#为什么先固定运行包&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;直接调用桌面应用 PATH 中的 Codex，会受到桌面自动升级和个人配置影响。不同机器即使用同一份平台代码，协议和默认行为也可能不同。&lt;/p&gt;&lt;p&gt;项目为运行包保存版本、官方资产名称、源码提交和 SHA-256。安装时校验下载包，启动时核对版本，并使用独立 HOME 与 CODEX_HOME。当前部署基线是 Codex 0.153.4，宿主 Node.js 固定为 24.15.0。&lt;/p&gt;&lt;p&gt;运行镜像由固定基线构建，实例配置记录具体镜像摘要。未来执行使用更新后的镜像，历史任务保留原来的镜像记录，便于解释某一轮当时运行在哪个环境。&lt;/p&gt;&lt;p&gt;独立配置目录用于减少个人状态干扰，Docker 约束负责执行隔离。这两项分别验证，不能只因为换了 HOME 就认为已经有安全沙箱。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;任务容器实际受到哪些限制&lt;a href=&quot;#任务容器实际受到哪些限制&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;约束&lt;/th&gt;&lt;th&gt;当前实现&lt;/th&gt;&lt;th&gt;对任务的影响&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;用户&lt;/td&gt;&lt;td&gt;非 root，UID/GID 为 1000&lt;/td&gt;&lt;td&gt;普通任务不能获得容器 root 身份&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;文件系统&lt;/td&gt;&lt;td&gt;根目录只读，任务工作区使用专属卷&lt;/td&gt;&lt;td&gt;输出写入工作区，系统目录不能任意修改&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;网络&lt;/td&gt;&lt;td&gt;Docker network none&lt;/td&gt;&lt;td&gt;不直接访问公网，也不能安装在线依赖&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;管理权限&lt;/td&gt;&lt;td&gt;无 Docker socket、清空 capabilities、禁止提权&lt;/td&gt;&lt;td&gt;任务不能通过已有管理入口改变容器权限&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;资源&lt;/td&gt;&lt;td&gt;1 CPU、768 MiB 内存、256 个 PID&lt;/td&gt;&lt;td&gt;对单任务资源设置上限&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;凭据&lt;/td&gt;&lt;td&gt;不注入模型供应商密钥和控制面管理凭据&lt;/td&gt;&lt;td&gt;模型与工具调用通过宿主受控出口&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;这些是当前容器启动实现中的值，并非生产容量建议。宿主仍需要管理 Docker，容器也共享内核。项目没有进行完整容器逃逸测试，磁盘配额和压力测试也没有因此完成。&lt;/p&gt;&lt;p&gt;隔离验证同时看声明与行为。先用 Docker inspect 核对配置，再实际尝试写系统路径、通过符号链接越界、访问外网和 Docker socket。工作区正常写入作为正例，避免把一个根本没有成功启动的容器误判为安全。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;无外网容器怎样使用 DeepSeek&lt;a href=&quot;#无外网容器怎样使用-deepseek&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Codex 在容器里调用一个本地模型入口，请求经 relay 和专用进程管道送到宿主。宿主确认当前任务仍可执行，记录请求并占用额度以后，才调用真实 provider，再把受控结果送回 Codex。&lt;/p&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;模型服务权限与额度宿主 Bridge容器内 Relay容器内 Codex模型服务权限与额度宿主 Bridge容器内 Relay容器内 Codex本次模型请求有界管道消息当前 Run 检查与请求预占允许或拒绝宿主携带凭据请求模型结果与可确认用量记录完成或失败受控响应模型结果
+&lt;/div&gt;&lt;div&gt;模型服务权限与额度宿主 Bridge容器内 Relay容器内 Codex模型服务权限与额度宿主 Bridge容器内 Relay容器内 Codex本次模型请求有界管道消息当前 Run 检查与请求预占允许或拒绝宿主携带凭据请求模型结果与可确认用量记录完成或失败受控响应模型结果
+&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;p&gt;Bridge 对消息体积、顺序和同时在途请求做限制。请求开始与完成之间还有权限检查，取消和撤权可以中断本地等待。供应商可能已经收到请求，平台不能据此保证对方不计费。&lt;/p&gt;&lt;p&gt;供应商 Key 不进入任务容器配置、浏览器存储或模型输入。当前持久实例使用宿主侧受保护的本地配置；运行时由宿主出口使用。它还不是集中 Secret Manager，也没有实现企业统一密钥轮换平台。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;模型循环由谁负责&lt;a href=&quot;#模型循环由谁负责&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Codex 获得模型结果后，会决定继续读取文件、执行命令还是调用动态工具。工具结果回到上下文，模型再决定下一步，直到这一轮结束。&lt;/p&gt;&lt;p&gt;平台管理任务期限、权限和结果交付，不通过自己拼几个固定分支来代替 Agent。自动化测试时可以提供预设模型响应，以便稳定触发某种行为；真实模式则由 DeepSeek 进行推理。&lt;/p&gt;&lt;p&gt;这也解释了两类证据的差别。2026 年 9 月的真实模型样例生成过文档，也修改过算术代码；某次成功复验中分别用了 2 次和 6 次模型请求。它们只是当时样例，不是吞吐指标或任意任务成功率。免费 provider 测试则能反复验证命令与授权流程，但不能证明真实模型理解任务的质量。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;externalSandbox 的选择来自实际兼容问题&lt;a href=&quot;#externalsandbox-的选择来自实际兼容问题&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;早期尝试在容器里重复启用 Codex 的 Linux 沙箱，遇到了 namespace 限制。当前运行路径使用 externalSandbox 模式，让 Codex 在平台已经配置的 Docker 边界内工作。&lt;/p&gt;&lt;p&gt;这意味着平台必须自己验证只读根目录、无外网、资源与权限限制。运行时配置里的“使用外部沙箱”只是职责声明，实际保护来自容器启动和监管实现。&lt;/p&gt;&lt;p&gt;任务工作区内写报告不需要每个文件都由管理员点击批准。企业工具写入的审批在受控工具网关进行，操作对象和参数明确绑定。两种路径承担不同职责，不能把工作区写文件等同于获准修改外部业务系统。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;用户点击停止以后发生什么&lt;a href=&quot;#用户点击停止以后发生什么&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;停止分成意图、协议和环境三个阶段。平台先保存取消意图并停止放行后续受控操作，再尝试中断运行时；有限等待以后仍未结束，就停止整个容器，最后观察状态并记录清理结果。&lt;/p&gt;&lt;p&gt;真实测试故意启动过脱离原进程组、忽略终止信号且持续写文件的子进程。杀掉宿主 attach 客户端后，文件仍然增长。最终验收观察的是容器退出、没有运行 PID，以及文件不再增长。&lt;/p&gt;&lt;p&gt;退出码也只能提供部分信息。例如 137 常见于 SIGKILL，但还可能涉及 OOM。测试同时检查 OOMKilled，而非只凭退出码宣布按预期终止。&lt;/p&gt;&lt;p&gt;删除容器失败以后，系统可以继续核实和重试资源清理，却不会重新执行模型任务。容器停止、资源移除和业务成功是三项不同事实。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;这套环境目前适合什么任务&lt;a href=&quot;#这套环境目前适合什么任务&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;当前适合受限的文档、数据和代码处理，输入与输出有明确大小范围。任务环境无外网，不支持任意依赖安装，也没有接通真实 Git 仓库或自动提交 PR。&lt;/p&gt;&lt;p&gt;上传代码任务还保留原始测试基线。已有验证专门防止任务通过修改测试文件或提前退出，伪装成原测试通过。能输出文件与能证明代码正确仍需要分开判断。&lt;/p&gt;&lt;p&gt;后续扩展联网或更复杂工具，需要重新评估出网目标、凭据和工作区约束。当前不通过给所有容器打开网络来绕过这些限制。&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-runtime/&quot;&gt;上一篇 · 任务与恢复&lt;/a&gt; · &lt;a href=&quot;/posts/codex-enterprise-agent-governance/&quot;&gt;下一篇 · 身份与治理&lt;/a&gt;&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>Codex Enterprise Agent 项目全记录（二）任务、运行时与故障恢复</title><link>https://luanluan1.github.io/posts/codex-enterprise-agent-runtime/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/codex-enterprise-agent-runtime/</guid><description>沿一次任务提交展开控制面、Task、Run、Runner、Lease、Thread 和 Runtime Adapter，解释幂等、事件顺序、取消与运行时失联后的处理。</description><pubDate>Mon, 26 Oct 2026 01:01:00 GMT</pubDate><content:encoded>&lt;blockquote&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-control-plane/&quot;&gt;系列总览与完整目录&lt;/a&gt;&lt;/p&gt;&lt;/blockquote&gt;
+&lt;p&gt;网页提交成功以后，真正的执行才刚开始。请求可能停在队列里，Runner 也可能在创建容器后退出。要让页面说清现在发生了什么，平台需要保留业务记录，并且知道哪些状态来自观察，哪些只是操作意图。&lt;/p&gt;
+&lt;p&gt;这一篇沿当前项目的任务路径展开。相关实现集中在控制面存储、Runner、Runtime Adapter 和对话运行层，下面的名称都对应实际存在的职责。&lt;/p&gt;
+&lt;section&gt;&lt;h2&gt;先把几个容易混在一起的对象分开&lt;a href=&quot;#先把几个容易混在一起的对象分开&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;对象&lt;/th&gt;&lt;th&gt;在本项目中的含义&lt;/th&gt;&lt;th&gt;保存什么&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;Conversation&lt;/td&gt;&lt;td&gt;员工看到的一段持续对话&lt;/td&gt;&lt;td&gt;标题、归属、轮次，以及会话整理状态&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Task&lt;/td&gt;&lt;td&gt;一轮具体业务工作&lt;/td&gt;&lt;td&gt;输入、任务状态、事件、用量和产物&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Run&lt;/td&gt;&lt;td&gt;一次执行记录&lt;/td&gt;&lt;td&gt;执行代次、租约、资源身份和收尾观察&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Runner&lt;/td&gt;&lt;td&gt;可信的后台执行管理程序&lt;/td&gt;&lt;td&gt;领取任务，监管运行时、容器和交付&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Thread&lt;/td&gt;&lt;td&gt;Codex 原生对话上下文&lt;/td&gt;&lt;td&gt;Agent 的历史交互与运行时状态&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Turn&lt;/td&gt;&lt;td&gt;Codex 中的一轮交互&lt;/td&gt;&lt;td&gt;当前输入及其执行过程&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;Session&lt;/td&gt;&lt;td&gt;需要结合上下文说明&lt;/td&gt;&lt;td&gt;浏览器登录会话与 Codex 会话数据是两种东西&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;当前对话的每一轮创建独立 Task，通过轮次记录关联到 Conversation。同一对话保留工作卷和 Codex 会话卷，后续成功轮次可以恢复原线程。一个 Task 在目前策略中不会因为结果未知而自动产生第二次业务执行。&lt;/p&gt;&lt;p&gt;Task 说明用户这轮要做什么，Run 说明谁尝试执行了它，Thread 为模型保留上下文。线程能恢复，不代表成员仍有权限，也不代表上一次外部写入可以重做。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;从发送到执行领取&lt;a href=&quot;#从发送到执行领取&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;控制面先校验登录、组织资格、任务类型、输入和所选 Agent。任务创建与启动命令在同一数据库事务提交，防止任务已经登记，却没有任何待处理启动记录。&lt;/p&gt;&lt;p&gt;网络重试使用幂等键。同一个键携带同样内容时，返回原结果；同一个键换了内容则拒绝。这里解决的是重复接单，真正执行了什么还需要独立记录。&lt;/p&gt;&lt;p&gt;Runner 在 PostgreSQL 中竞争领取。事务检查当前并发名额，再锁定可执行任务并复核成员资格，随后计划 Run。资源身份先记入持久记录，创建容器时再使用它。进程即使卡在创建与回报之间，后续恢复者仍有依据寻找资源。&lt;/p&gt;&lt;div&gt;&lt;div&gt;&lt;div&gt;Codex App ServerRunnerPostgreSQL控制面浏览器Codex App ServerRunnerPostgreSQL控制面浏览器提交任务与幂等键事务创建任务和启动命令返回任务身份加锁领取、复核授权、计划 Run创建容器并初始化运行时开始或恢复线程，启动轮次输出、工具请求和轮次事件保存事件与执行观察交付产物并提交收尾状态按游标读取状态、事件和文件
+&lt;/div&gt;&lt;div&gt;Codex App ServerRunnerPostgreSQL控制面浏览器Codex App ServerRunnerPostgreSQL控制面浏览器提交任务与幂等键事务创建任务和启动命令返回任务身份加锁领取、复核授权、计划 Run创建容器并初始化运行时开始或恢复线程，启动轮次输出、工具请求和轮次事件保存事件与执行观察交付产物并提交收尾状态按游标读取状态、事件和文件
+&lt;/div&gt;&lt;/div&gt;&lt;/div&gt;&lt;p&gt;后台会持续检查取消、权限和租约。一次授权通过只说明当时允许执行，排队时间和长命令都可能跨过后续变化。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;Adapter 怎样接住 Codex 协议&lt;a href=&quot;#adapter-怎样接住-codex-协议&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Codex App Server 通过进程管道交换 JSONL。请求用 ID 关联响应，执行进展通过通知到达；某些审批或动态工具请求还会反向等待平台回复。&lt;/p&gt;&lt;p&gt;&lt;code&gt;turn/start&lt;/code&gt; 返回只说明运行时接受了这条命令。平台仍然需要等待完成事件，并检查任务的实际交付情况，不能在收到请求响应时直接宣布成功。&lt;/p&gt;&lt;p&gt;Runtime Adapter 把 &lt;code&gt;thread/start&lt;/code&gt;、&lt;code&gt;thread/resume&lt;/code&gt;、&lt;code&gt;turn/start&lt;/code&gt; 和 &lt;code&gt;turn/steer&lt;/code&gt; 等操作集中起来，也暴露当前所需的事件与工具处理入口。它没有保存组织、任务或额度，也没有提供一个让上层随意发送任意 RPC 的通用出口。&lt;/p&gt;&lt;p&gt;这样的边界比较薄。平台当前只有一种运行时，提前拆出独立服务会增加部署与恢复成本。等到真的需要第二种运行时，再比较其上下文和工具语义，适配这一层；企业任务和审批记录仍然留在控制面。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;事件序号需要与提交顺序一致&lt;a href=&quot;#事件序号需要与提交顺序一致&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;任务页面按游标读取事件，因此事件顺序会直接影响它能否完整回放。&lt;/p&gt;&lt;p&gt;开发中专门验证过一个数据库问题。事务 A 先取得序号 5，事务 B 后取得序号 6，但 B 先提交。客户端读到 6 后把游标推进到 6，A 稍后提交的 5 就可能被跳过。&lt;/p&gt;&lt;p&gt;当前实现对同一任务的事件追加进行串行化，在短事务里更新计数、插入事件并提交。测试会故意阻塞一个事务，观察后来的事务等待任务行锁，再验证分页和回滚后的结果。&lt;/p&gt;&lt;p&gt;代价是单个任务的事件写入不能无限并行。因此事务里不放模型调用或远程网络等待。这个约束来自页面回放的需要，不能扩大为整个系统已经实现通用事件流服务。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;租约解决不了进程是否仍在运行&lt;a href=&quot;#租约解决不了进程是否仍在运行&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;Run 的租约有期限，Runner 需要续期，并使用当前执行令牌报告心跳、事件和完成结果。恢复者切换令牌后，旧 Runner 的数据库回报失效。&lt;/p&gt;&lt;p&gt;但是，旧执行者已经发出去的系统命令不会随令牌变化消失。真实故障实验里，强杀宿主 Runner 后，Docker 容器和其中持续写文件的子进程仍然运行。&lt;/p&gt;&lt;p&gt;所以恢复路径需要核验容器归属，观察它的实际状态，再尝试停止和回收。工作区在无法确认时保持隔离，不能因为租约过期就再启动一个写入者。&lt;/p&gt;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&lt;table&gt;&lt;thead&gt;&lt;tr&gt;&lt;th&gt;情况&lt;/th&gt;&lt;th&gt;平台采取的动作&lt;/th&gt;&lt;/tr&gt;&lt;/thead&gt;&lt;tbody&gt;&lt;tr&gt;&lt;td&gt;排队任务收到取消&lt;/td&gt;&lt;td&gt;取消启动意图，不创建新的执行容器&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;正在执行时取消&lt;/td&gt;&lt;td&gt;记录取消意图，打断运行时并确认容器停止&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;删除容器失败&lt;/td&gt;&lt;td&gt;保存清理失败，可继续核实清理，不能重跑业务&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;租约失效且结果无法确认&lt;/td&gt;&lt;td&gt;标记待核实，拒绝旧令牌上报和自动重放&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;已确认容器停止但业务结果仍不明&lt;/td&gt;&lt;td&gt;保留未知结果，停止观察不会替代业务确认&lt;/td&gt;&lt;/tr&gt;&lt;/tbody&gt;&lt;/table&gt;&lt;p&gt;任务状态与资源清理状态因此分别记录。成功、失败、取消、待核实描述业务结果；容器是否移除、工作区是否保留，属于另一组事实。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;恢复还要关掉悬空的交互&lt;a href=&quot;#恢复还要关掉悬空的交互&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;持续对话接入以后，任务失联还可能留下已领取的补充消息、等待回答的问题和待审批工具请求。旧页面如果继续显示可操作，用户就会向一个已经失效的运行提交内容。&lt;/p&gt;&lt;p&gt;P1 收尾复用已有持久状态，把不能确认投递结果的消息和问题标记为待核实，同时关闭相关工具调用。审批入口返回关闭结果，执行入口也不能产生新的工具写入。重复清理保持幂等，不另建一个 Run 来假装恢复。&lt;/p&gt;&lt;p&gt;独立复核曾找到锁顺序不一致、锁等待后租约过期，以及抛错导致关闭记录回滚等问题。修复统一了事务锁顺序，在拿到锁后重新检查数据库时间，并让关闭记录先提交，再返回拒绝。&lt;/p&gt;&lt;/section&gt;
+&lt;section&gt;&lt;h2&gt;如果以后引入 LangGraph&lt;a href=&quot;#如果以后引入-langgraph&quot;&gt;&lt;span&gt;#&lt;/span&gt;&lt;/a&gt;&lt;/h2&gt;&lt;p&gt;目前项目仍使用 Codex App Server，尚未引入 LangGraph。未来出现明确的多分支编排或跨进程等待需求时，可以评估 Agent 内部执行部分及 Adapter 后的运行实现。&lt;/p&gt;&lt;p&gt;替换范围需要按真实契约确定，不能承诺改一个类就完成迁移。平台已经承担的身份、业务 Task、文件归属和审批审计，不应随着框架变化重新交给模型状态管理。&lt;/p&gt;&lt;p&gt;下一篇进入运行环境，说明无外网的任务容器如何使用模型，以及平台怎样确认任务真的停止。&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;/posts/codex-enterprise-agent-control-plane/&quot;&gt;上一篇 · 产品总览&lt;/a&gt; · &lt;a href=&quot;/posts/codex-enterprise-agent-execution/&quot;&gt;下一篇 · 模型与容器&lt;/a&gt;&lt;/p&gt;&lt;/section&gt;</content:encoded></item><item><title>单卡 RTX 5090 做 Qwen 回答蒸馏，为什么训练后还少答对了 3 题</title><link>https://luanluan1.github.io/posts/qwen-distillation-lora-gsm8k-experiment/</link><guid isPermaLink="true">https://luanluan1.github.io/posts/qwen-distillation-lora-gsm8k-experiment/</guid><description>用 RTX 5090 完成 Qwen2.5-7B 到 0.5B 的回答蒸馏。474 道配对训练题、两组 LoRA 和 200 道固定测试，教师回答组得到 45% 正确率，高于原始解答组的 35%，却仍未超过原始学生。记录训练过程、评分修正，以及总分背后的逐题变化。</description><pubDate>Fri, 11 Sep 2026 01:00:00 GMT</pubDate><content:encoded>&lt;p&gt;两组 LoRA 都顺利训练完了，每组只用了两分钟左右。把 200 道测试题跑完，我得到的却是一个不太好写成“成功案例”的结果。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;教师回答组答对 90 题，普通微调组答对 70 题。未经训练的原始学生，答对了 93 题。&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;7B 教师生成的解答在这次对照中更有效，但这轮训练没有提高 0.5B 学生的总体数学准确率。继续逐题看，蒸馏组学会了原先不会的 21 题，也答错了原先会的 24 题。只看总分，几乎看不到这 45 道题发生过变化。&lt;/p&gt;
 &lt;p&gt;&lt;/p&gt;&lt;figure&gt;&lt;img src=&quot;/assets/images/distillation/results.png&quot; alt=&quot;四组模型在固定 200 道 GSM8K 测试题上的最终数值正确率，原始学生 46.5%、A 组 35%、B 组 45%、教师 87%&quot; /&gt;&lt;figcaption&gt;四组模型在固定 200 道 GSM8K 测试题上的最终数值正确率，原始学生 46.5%、A 组 35%、B 组 45%、教师 87%&lt;/figcaption&gt;&lt;/figure&gt;&lt;p&gt;&lt;/p&gt;
