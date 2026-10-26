@@ -15,6 +15,7 @@ import {
 	backgroundWallpaper,
 	displaySettingsConfig,
 	expressiveCodeConfig,
+	musicPlayerConfig,
 	profileConfig,
 	siteConfig,
 } from "@/config";
@@ -606,7 +607,9 @@ const siteLang = lang.replace("_", "-");
     <!-- 页面顶部渐变高光效果 - 只在full和semifull模式下显示 -->
     {shouldShowTopHighlight && <div class="top-gradient-highlight" />}
     <ConfigCarrier />
-    <MusicManager />
+    {(musicPlayerConfig.showInNavbar || musicPlayerConfig.showInSidebar) && (
+      <MusicManager />
+    )}
     <slot />
 
 

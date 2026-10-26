@@ -181,6 +181,8 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 
 		// 监听导航栏播放按钮事件
 		window.addEventListener("bg-player-toggle", toggle);
+		window.addEventListener("bg-player-prev", function () { switchTrack(prevIndex()); });
+		window.addEventListener("bg-player-next", function () { switchTrack(pickIndex(currentIndex)); });
 		video.addEventListener("ended", onEnded);
 		video.addEventListener("error", onError);
 		// 播放成功时重置错误计数
@@ -218,8 +220,6 @@ const tLoadError = i18n(I18nKey.videoLoadError);
 <style>
 	:global([data-bg-video-playing] #banner-images-container),
 	:global([data-bg-video-playing] #banner-dim-container),
-	:global([data-bg-video-playing] #banner-overlay-container),
-	:global([data-bg-video-playing] #header-waves),
 	:global([data-bg-video-playing] #wallpaper-gradient) {
 		opacity: 0 !important;
 		transition: opacity 0.5s ease;

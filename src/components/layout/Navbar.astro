@@ -55,6 +55,16 @@ const allowLayoutSwitch = displaySettingsConfig.layoutSwitchable;
 const hasDisplaySettings =
 	showThemeColor || isWallpaperSwitchable || allowLayoutSwitch;
 
+const backgroundVideoSources =
+	typeof backgroundWallpaper.src === "object" &&
+	!Array.isArray(backgroundWallpaper.src)
+		? backgroundWallpaper.src.playerUrl
+		: undefined;
+const hasMultipleBackgroundVideos =
+	Array.isArray(backgroundVideoSources) && backgroundVideoSources.length > 1;
+const videoPrevLabel = i18n(I18nKey.videoPrev);
+const videoNextLabel = i18n(I18nKey.videoNext);
+
 // 根据 siteConfig.pages 过滤导航栏链接
 const pages = siteConfig.pages;
 
@@ -189,6 +199,18 @@ const logoVariants = await Promise.all(
                         <Icon is:inline name="material-symbols:music-note-rounded" class="text-[1.25rem]"></Icon>
                     </button>
                 )}
+                {backgroundWallpaper.playerEnable && hasMultipleBackgroundVideos && (
+                    <>
+                        <button
+                            aria-label={videoPrevLabel}
+                            title={videoPrevLabel}
+                            class="btn-plain scale-animation rounded-lg h-9 w-9 md:h-11 md:w-11 active:scale-90"
+                            id="bg-player-prev"
+                        >
+                            <Icon is:inline name="material-symbols:skip-previous-rounded" class="text-[1.25rem]" />
+                        </button>
+                    </>
+                )}
                 {backgroundWallpaper.playerEnable && backgroundWallpaper.mode !== "none" && (
                     <button
                         aria-label={i18n(I18nKey.videoPlay)}
@@ -199,6 +221,16 @@ const logoVariants = await Promise.all(
                     >
                         <span class="bg-player-icon-play"><Icon is:inline name="material-symbols:play-arrow-rounded" class="text-[1.5rem]" /></span>
                         <span class="bg-player-icon-pause hidden"><Icon is:inline name="material-symbols:pause-rounded" class="text-[1.5rem]" /></span>
+                    </button>
+                )}
+                {backgroundWallpaper.playerEnable && hasMultipleBackgroundVideos && (
+                    <button
+                        aria-label={videoNextLabel}
+                        title={videoNextLabel}
+                        class="btn-plain scale-animation rounded-lg h-9 w-9 md:h-11 md:w-11 active:scale-90"
+                        id="bg-player-next"
+                    >
+                        <Icon is:inline name="material-symbols:skip-next-rounded" class="text-[1.25rem]" />
                     </button>
                 )}
                 {hasDisplaySettings && (
@@ -297,6 +329,20 @@ function loadButtonScript() {
                 window.swup.hooks.on("content:replace", syncBgPlayerBtn);
             });
         }
+    }
+
+    let bgPlayerPrevBtn = document.getElementById("bg-player-prev");
+    if (bgPlayerPrevBtn) {
+        bgPlayerPrevBtn.onclick = function () {
+            window.dispatchEvent(new CustomEvent("bg-player-prev"));
+        };
+    }
+
+    let bgPlayerNextBtn = document.getElementById("bg-player-next");
+    if (bgPlayerNextBtn) {
+        bgPlayerNextBtn.onclick = function () {
+            window.dispatchEvent(new CustomEvent("bg-player-next"));
+        };
     }
 
     let themeSwitchBtn = document.getElementById("scheme-switch");
