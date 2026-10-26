@@ -39,7 +39,7 @@ export const projects: Project[] = [
 		stack: ["Node.js", "PostgreSQL", "Codex App Server", "Docker", "MCP", "Playwright"],
 		links: [
 			{
-				label: "阅读项目总结",
+				label: "阅读七篇项目全记录",
 				href: "/posts/codex-enterprise-agent-control-plane/",
 			},
 		],
