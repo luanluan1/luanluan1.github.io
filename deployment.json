@@ -1,0 +1,10 @@
+{
+  "repository": "luanluan1/luanluan1.github.io",
+  "sourceBranch": "codex/firefly-source",
+  "sourceCommit": "7564d5711f477ac72728354c1d78448fbb66f579",
+  "generatedAt": "2026-10-26T01:58:22.537Z",
+  "hashes": {
+    "src/content/posts/codex-enterprise-agent-control-plane.md": "6d2cca3db1d61817c2b2656d9aaec7c8a4db5b1940fd2e98319256f7264fa4d4",
+    "src/data/projects.ts": "88265b62a6a80611afffcd5b5d0decb1edebb501388b8a595cf88ba9d51183d8"
+  }
+}
