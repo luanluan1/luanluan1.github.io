@@ -1,10 +1,16 @@
 {
   "repository": "luanluan1/luanluan1.github.io",
   "sourceBranch": "codex/firefly-source",
-  "sourceCommit": "7564d5711f477ac72728354c1d78448fbb66f579",
-  "generatedAt": "2026-10-26T01:58:22.537Z",
+  "sourceCommit": "bfebbdfa41bb3aadee760288401ff96c6794a835",
+  "generatedAt": "2026-10-26T02:54:43.167Z",
   "hashes": {
-    "src/content/posts/codex-enterprise-agent-control-plane.md": "6d2cca3db1d61817c2b2656d9aaec7c8a4db5b1940fd2e98319256f7264fa4d4",
-    "src/data/projects.ts": "88265b62a6a80611afffcd5b5d0decb1edebb501388b8a595cf88ba9d51183d8"
+    "src/content/posts/codex-enterprise-agent-capabilities.md": "3407ad507c9ce99df4e44fa3b11130890f94c8e6eaf485b08be4737cb08cdb1b",
+    "src/content/posts/codex-enterprise-agent-control-plane.md": "bad1b02077b076e987016c42bd32be463214abd0eba175205c46b3626c73acd1",
+    "src/content/posts/codex-enterprise-agent-delivery.md": "d1a0b2df5e219be9e8cfcd1c346750214166f6bc552ee2979483b4a602fc1469",
+    "src/content/posts/codex-enterprise-agent-execution.md": "90f6b85ab45f94814a8c42083fff0fc1d182ce7e8cf51860413d4fcb149c7ac0",
+    "src/content/posts/codex-enterprise-agent-files.md": "ca7762210e38dfd06c944e364483f3c45302f4f8146df3cb4f49bde65b909e15",
+    "src/content/posts/codex-enterprise-agent-governance.md": "e078ed40c39b4331c7905fe83e07251614236b11727467d36c33b9efcd8816ce",
+    "src/content/posts/codex-enterprise-agent-runtime.md": "dbc4e1c9599be01aff6f9c44353fc4bdde848e9fb1e477528be28041f3546851",
+    "src/data/projects.ts": "53c7e52d70576d210e7e0bb5ed5c7f805da42d3c62c8a0c64ff43f568c6d979d"
   }
 }
