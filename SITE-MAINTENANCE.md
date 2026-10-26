@@ -37,6 +37,6 @@ node scripts/deployment-manifest.mjs
 
 ## 本次内容与验证范围
 
-新增文章为 `src/content/posts/codex-enterprise-agent-control-plane.md`，公开路径为 `/posts/codex-enterprise-agent-control-plane/`。项目列表新增 `codex-enterprise-agent`，保留既有项目和文章。
+项目总结现在包含一篇总览及六篇专题。总览仍为 `src/content/posts/codex-enterprise-agent-control-plane.md`，公开路径为 `/posts/codex-enterprise-agent-control-plane/`，专题沿用 `codex-enterprise-agent-` 文件前缀。项目卡片进入完整目录，既有项目和文章保留；deployment.json 记录全部七篇文章和项目数据哈希。章节范围与事实核验见 [系列编辑记录](docs/codex-enterprise-series.md)。
 
 总结依据企业平台实际代码和验证记录撰写，明确本地试用与生产可靠性边界；没有公开企业平台源码、测试账号密码、Token、私有服务地址或真实业务材料。原始 Firefly 定制内容归入本次源码存档，不冒充本次新写的功能。
