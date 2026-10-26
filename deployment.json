@@ -2,7 +2,7 @@
   "repository": "luanluan1/luanluan1.github.io",
   "sourceBranch": "codex/firefly-source",
   "sourceCommit": "81cd2b3591b0180f0f0ee3103bff16d251753c7e",
-  "generatedAt": "2026-10-26T08:53:10.839Z",
+  "generatedAt": "2026-10-26T09:02:13.032Z",
   "hashes": {
     "src/content/posts/codex-enterprise-agent-capabilities.md": "3407ad507c9ce99df4e44fa3b11130890f94c8e6eaf485b08be4737cb08cdb1b",
     "src/content/posts/codex-enterprise-agent-control-plane.md": "bad1b02077b076e987016c42bd32be463214abd0eba175205c46b3626c73acd1",
@@ -11,7 +11,7 @@
     "src/content/posts/codex-enterprise-agent-files.md": "ca7762210e38dfd06c944e364483f3c45302f4f8146df3cb4f49bde65b909e15",
     "src/content/posts/codex-enterprise-agent-governance.md": "e078ed40c39b4331c7905fe83e07251614236b11727467d36c33b9efcd8816ce",
     "src/content/posts/codex-enterprise-agent-runtime.md": "dbc4e1c9599be01aff6f9c44353fc4bdde848e9fb1e477528be28041f3546851",
-    "src/content/posts/transformer-attention-dot-product-vs-cosine.md": "23c6db2947166c3063b8536d7ab9bd241ddfaf6b0d4a06e3b45b0db797a83b74",
+    "src/content/posts/transformer-attention-dot-product-vs-cosine.md": "88ac470630016ac0bcf4ea214031cf91245e69818f2bb8e58535e8749ac7152d",
     "src/data/projects.ts": "53c7e52d70576d210e7e0bb5ed5c7f805da42d3c62c8a0c64ff43f568c6d979d"
   }
 }
